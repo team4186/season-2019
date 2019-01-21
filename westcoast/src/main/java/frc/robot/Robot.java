@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
+import frc.robot.ArcadeMode.Result;
 
 public class Robot extends TimedRobot {
  
@@ -35,6 +36,10 @@ public class Robot extends TimedRobot {
   private final Encoder leftDriveEncoder = new Encoder(4, 5);
   private final Encoder rightDriveEncoder = new Encoder(6, 7);
   private final AHRS navx = new AHRS(SPI.Port.kMXP);
+
+  //Auxiliary Objects
+  private ArcadeMode arcadeMode = new ArcadeMode();
+	public DirectionRef absAngle = new DirectionRef();
 
   //Commands
   CommandGroup teleop = new CommandGroup();
@@ -105,6 +110,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     Scheduler.getInstance().run();
+
+    Result arcadeResult = arcadeMode.drive(joystick.getY(), joystick.getTwist());
 
   }
 
