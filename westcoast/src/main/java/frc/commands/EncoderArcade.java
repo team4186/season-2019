@@ -1,11 +1,10 @@
 package frc.commands;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,8 +14,8 @@ public class EncoderArcade extends Command {
 	private PIDController pidRight;
 	
 	public EncoderArcade(
-			WPI_VictorSPX victorLeft,
-			WPI_VictorSPX victorRight,
+			SpeedController victorLeft,
+			SpeedController victorRight,
 			Encoder leftEncoder, 
 			Encoder rightEncoder,
 			double p,

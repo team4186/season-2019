@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
 import frc.robot.ArcadeMode.Result;
+import edu.wpi.first.wpilibj.CameraServer;
 
 public class Robot extends TimedRobot {
  
@@ -46,6 +47,7 @@ public class Robot extends TimedRobot {
   CommandGroup autonomous = new CommandGroup();
   CommandGroup test = new CommandGroup();
   TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
+  EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, leftDriveEncoder, rightDriveEncoder, 0.0001, 0.0, 0.0);
 
   @Override
   public void robotInit() {
@@ -63,6 +65,8 @@ public class Robot extends TimedRobot {
     leftDriveEncoder.setReverseDirection(true);
 
     teleop.addParallel(teleopDrive);
+
+    CameraServer.getInstance().startAutomaticCapture();
 
   }
 

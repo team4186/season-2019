@@ -27,7 +27,13 @@ public class TurnRelAngle extends Command {
 	
 	private EncoderArcade turnDrive;
 	
-	public TurnRelAngle(AHRS navx, double direction, DirectionRef absAngle, EncoderArcade turnDrive, ArcadeMode arcadeMode) {
+	public TurnRelAngle(
+        AHRS navx, 
+        double direction, 
+        DirectionRef absAngle, 
+        EncoderArcade turnDrive, 
+        ArcadeMode arcadeMode
+        ) {
 		
 		this.navx = navx;
 		this.direction = direction;

@@ -9,7 +9,10 @@ public class TeleopDrive extends Command {
 	private final DifferentialDrive drive;
 	private final Joystick joystick;
 	
-	public TeleopDrive(DifferentialDrive drive, Joystick joystick) {
+	public TeleopDrive(
+        DifferentialDrive drive, 
+        Joystick joystick
+        ) {
 		
 		this.drive = drive;
 		this.joystick = joystick;

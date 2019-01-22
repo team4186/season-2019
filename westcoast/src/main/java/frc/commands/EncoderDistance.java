@@ -1,12 +1,11 @@
 package frc.commands;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class EncoderDistance extends Command {
@@ -23,7 +22,13 @@ public class EncoderDistance extends Command {
 	private double leftSetpoint = 0.0;
 	private double rightSetpoint = 0.0;
 	
-	public EncoderDistance(Encoder leftEncoder, Encoder rightEncoder, WPI_VictorSPX victorLeft, WPI_VictorSPX victorRight, double distance) {
+	public EncoderDistance(
+        Encoder leftEncoder, 
+        Encoder rightEncoder, 
+        SpeedController victorLeft, 
+        SpeedController victorRight, 
+        double distance
+        ) {
 		
 		this.leftEncoder = leftEncoder;
 		this.rightEncoder = rightEncoder;
