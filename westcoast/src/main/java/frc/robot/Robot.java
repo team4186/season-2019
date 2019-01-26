@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 
 public class Robot extends TimedRobot {
  
-  MotorFactory motorFactory = new MotorFactoryVictor();
+  MotorFactory hybridFactory = new MotorFactoryHybrid();
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
@@ -26,8 +26,14 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   //Drive system
+  /*
+  Removed for talon-victor-victor setup
   private final SpeedController leftMain = motorFactory.create(5, 6, 7);
   private final SpeedController rightMain = motorFactory.create(2, 3, 4);
+  */
+  private final SpeedController leftMain = hybridFactory.create(7, 8, 9);
+  private final SpeedController rightMain = hybridFactory.create(1, 2, 3);
+   
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
   //Input
@@ -36,7 +42,6 @@ public class Robot extends TimedRobot {
   //Sensors
   private final Encoder leftDriveEncoder = new Encoder(4, 5);
   private final Encoder rightDriveEncoder = new Encoder(6, 7);
-  private final AHRS navx = new AHRS(SPI.Port.kMXP);
 
   //Auxiliary Objects
   private ArcadeMode arcadeMode = new ArcadeMode();
