@@ -2,6 +2,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,13 +35,15 @@ public class Robot extends TimedRobot {
   private final SpeedController leftMain = motorFactory.create(5, 6, 7);
   private final SpeedController rightMain = motorFactory.create(2, 3, 4);
   */
-  private final SpeedController leftMain = hybridFactory.create(7, 8, 9);
-  private final SpeedController rightMain = hybridFactory.create(1, 2, 3);
+  private final SpeedController leftMain = hybridFactory.create(5, 4, 6);
+  private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
    
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
   //Input
   private final Joystick joystick = new Joystick(0);
+  private final JoystickButton buttonA = new JoystickButton(joystick, 3);
+  private final JoystickButton buttonB = new JoystickButton(joystick, 4)
 
   //Sensors
   private final Encoder leftDriveEncoder = new Encoder(4, 5);
@@ -45,7 +51,9 @@ public class Robot extends TimedRobot {
 
   //Auxiliary Objects
   private ArcadeMode arcadeMode = new ArcadeMode();
-	public DirectionRef absAngle = new DirectionRef();
+  public DirectionRef absAngle = new DirectionRef();
+  private Compressor compressor = new Compressor(1);
+	private DoubleSolenoid actuator = new DoubleSolenoid(1, 0, 1);
 
   //Commands
   CommandGroup teleop = new CommandGroup();
@@ -110,7 +118,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-
+    compressor.setClosedLoopControl(true);
     teleop.start();
 
   }
@@ -119,6 +127,16 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     Scheduler.getInstance().run();
+
+    if(buttonA.get()) {
+			actuator.set(DoubleSolenoid.Value.kForward);
+		}
+		else if(buttonB.get()) {			
+			actuator.set(DoubleSolenoid.Value.kReverse);
+		}
+		else {
+			actuator.set(DoubleSolenoid.Value.kOff);
+		}
 
     Result arcadeResult = arcadeMode.drive(joystick.getY(), joystick.getTwist());
 
@@ -146,14 +164,14 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit(){
 
-    test.start();
+    //test.start();
 
   }
 
   @Override
   public void testPeriodic() {
 
-    Scheduler.getInstance().run();
+    //Scheduler.getInstance().run();
 
   }
 }
