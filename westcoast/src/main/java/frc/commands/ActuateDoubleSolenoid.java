@@ -8,14 +8,17 @@ public class ActuateDoubleSolenoid extends Command {
 
 	private final DoubleSolenoid solenoid;
 	private final Value direction;
+	private final Value endDirection;
 	
 	public ActuateDoubleSolenoid(
 		DoubleSolenoid solenoid,
-		Value direction
+		Value direction,
+		Value endDirection
         ) 
         {
 			this.direction = direction;
 			this.solenoid = solenoid;
+			this.endDirection = endDirection;
         }
 	
 	@Override
@@ -27,6 +30,7 @@ public class ActuateDoubleSolenoid extends Command {
 	protected void execute() {
 		
 		solenoid.set(direction);
+		System.out.println("Running");
 		
 	}
 	
@@ -40,7 +44,8 @@ public class ActuateDoubleSolenoid extends Command {
 	@Override
 	protected void end() {
 
-		solenoid.set(DoubleSolenoid.Value.kOff);
+		solenoid.set(endDirection);
+		System.out.println("Finished");
 		
 	}
 	

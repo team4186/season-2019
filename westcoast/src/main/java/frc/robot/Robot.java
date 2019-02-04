@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -12,6 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.motorFactory.*;
+import frc.pidSources.CenterDisplacement;
+import frc.pidSources.WallMidpoint;
+
 import com.kauailabs.navx.frc.*;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -19,6 +23,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
 import frc.robot.ArcadeMode.Result;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.networktables.*;
 
 public class Robot extends TimedRobot {
  
@@ -43,7 +48,7 @@ public class Robot extends TimedRobot {
   //Input
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3);
-  private final JoystickButton buttonB = new JoystickButton(joystick, 4)
+  private final JoystickButton buttonB = new JoystickButton(joystick, 4);
 
   //Sensors
   private final Encoder leftDriveEncoder = new Encoder(4, 5);
@@ -52,8 +57,8 @@ public class Robot extends TimedRobot {
   //Auxiliary Objects
   private ArcadeMode arcadeMode = new ArcadeMode();
   public DirectionRef absAngle = new DirectionRef();
-  private Compressor compressor = new Compressor(1);
-	private DoubleSolenoid actuator = new DoubleSolenoid(1, 0, 1);
+  private Compressor compressor = new Compressor(10);
+  private DoubleSolenoid actuator = new DoubleSolenoid(10, 0, 1);
 
   //Commands
   CommandGroup teleop = new CommandGroup();
@@ -79,8 +84,7 @@ public class Robot extends TimedRobot {
 
     teleop.addParallel(teleopDrive);
 
-    CameraServer.getInstance().startAutomaticCapture();
-
+    CameraServer.getInstance().startAutomaticCapture(0);
   }
 
   @Override
@@ -118,7 +122,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+
     compressor.setClosedLoopControl(true);
+
+    buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
+
     teleop.start();
 
   }
@@ -127,16 +135,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     Scheduler.getInstance().run();
-
-    if(buttonA.get()) {
-			actuator.set(DoubleSolenoid.Value.kForward);
-		}
-		else if(buttonB.get()) {			
-			actuator.set(DoubleSolenoid.Value.kReverse);
-		}
-		else {
-			actuator.set(DoubleSolenoid.Value.kOff);
-		}
 
     Result arcadeResult = arcadeMode.drive(joystick.getY(), joystick.getTwist());
 
@@ -161,17 +159,57 @@ public class Robot extends TimedRobot {
 
   }
 
+  NetworkTableEntry angleArray;
+  NetworkTableEntry lengthArray;
+  NetworkTableEntry centerXArray;
+  NetworkTableEntry centerYArray;
+
+  static final double[] EMPTY = {};
+
+  AlignHatch align = new AlignHatch();
+
   @Override
   public void testInit(){
 
     //test.start();
+    //centerDisplacement = new CenterDisplacement();
+    NetworkTable referenceLines = NetworkTableInstance
+      .getDefault()
+      .getTable("GRIP/referenceLines");
 
+
+    
+    
+    angleArray = referenceLines.getEntry("angle");
+    
+    lengthArray = referenceLines.getEntry("length");
+
+    
+    SmartDashboard.putData(align);
   }
+
+
+
 
   @Override
   public void testPeriodic() {
 
-    //Scheduler.getInstance().run();
+    double[] angles = angleArray.getDoubleArray(EMPTY);
+    double[] lengths = lengthArray.getDoubleArray(EMPTY);
+
+
+    double weightedMean = 0;
+    double denom = 0;
+
+    for (int i = 0; i < Math.min(lengths.length, angles.length); ++i) {
+
+      weightedMean += ((angles[i] + 180) % 180)*lengths[i];
+      denom += lengths[i];
+
+    }
+
+    weightedMean /= denom;
+
 
   }
 }
