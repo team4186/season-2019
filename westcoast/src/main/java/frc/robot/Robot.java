@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
   CommandGroup autonomous = new CommandGroup();
   CommandGroup test = new CommandGroup();
   TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
-  EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0);
+  EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0); //encoders are switched
   AlignHatch alignHatch = new AlignHatch(encoderArcade);
 
   @Override
@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     leftDriveEncoder.setReverseDirection(true);
 
     //teleop.addParallel(teleopDrive);
-    teleop.addSequential(alignHatch);
+    autonomous.addSequential(alignHatch);
     //test.addSequential(alignHatch);
 
     CameraServer.getInstance().startAutomaticCapture(0);
@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    compressor.setClosedLoopControl(false);
 
     autonomous.start();
 
@@ -125,9 +127,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
 
-    compressor.setClosedLoopControl(false); //set to true 
+    compressor.setClosedLoopControl(true); //set to true 
 
-    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
+    buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
 
     teleop.start();
 

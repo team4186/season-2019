@@ -22,7 +22,7 @@ public class AlignHatch extends Command {
 
 			this.encoderArcade = encoderArcade;
 
-		pid = new PIDController(0.001, 0.0, 0.0, new WallMidpoint(), new PIDOutput() {
+		pid = new PIDController(0.001, 0.0, 0.0, new WallMidpoint("X", 80.0), new PIDOutput() {
 			
 			@Override
 			public void pidWrite(double output) {

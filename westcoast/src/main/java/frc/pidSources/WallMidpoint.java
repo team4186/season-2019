@@ -8,16 +8,18 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class WallMidpoint implements PIDSource{
 
-    static final double centerXFOV = 80;
+    static double centerFOV;
     static final double[] empty = {};
-    private NetworkTableEntry centerXArray;
+    private NetworkTableEntry centerArray;
 
-    public WallMidpoint(){
+    public WallMidpoint(String axis, double centerFOV){ //('X' or 'Y'), (FOV: X = 80, Y = 60)
 
-      centerXArray = NetworkTableInstance
+      this.centerArray = NetworkTableInstance
       .getDefault()
       .getTable("GRIP/referenceContours")
-      .getEntry("centerX");
+      .getEntry("center" + axis);
+
+      this.centerFOV = centerFOV;
 
     }
 
@@ -29,14 +31,14 @@ public class WallMidpoint implements PIDSource{
 	@Override
 	public double pidGet() {
 
-    double[] centerXVals = centerXArray.getDoubleArray(empty);
-    if(centerXVals.length != 2){
+    double[] centerVals = centerArray.getDoubleArray(empty);
+    if(centerVals.length != 2){
         return 0;
     }
-    double minCenter = Math.min(centerXVals[0], centerXVals[1]);
-    double maxCenter = Math.max(centerXVals[0], centerXVals[1]);
+    double minCenter = Math.min(centerVals[0], centerVals[1]);
+    double maxCenter = Math.max(centerVals[0], centerVals[1]);
     
-    return minCenter + (maxCenter - minCenter)/2 - centerXFOV;
+    return minCenter + (maxCenter - minCenter)/2 - centerFOV;
 				
 	}
 			
