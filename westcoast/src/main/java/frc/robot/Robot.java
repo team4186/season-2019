@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import frc.motorFactory.*;
 import frc.pidSources.CenterDisplacement;
 import frc.pidSources.WallMidpoint;
-
 import com.kauailabs.navx.frc.*;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -65,7 +64,8 @@ public class Robot extends TimedRobot {
   CommandGroup autonomous = new CommandGroup();
   CommandGroup test = new CommandGroup();
   TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
-  EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, leftDriveEncoder, rightDriveEncoder, 0.0001, 0.0, 0.0);
+  EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0);
+  AlignHatch alignHatch = new AlignHatch(encoderArcade);
 
   @Override
   public void robotInit() {
@@ -82,7 +82,9 @@ public class Robot extends TimedRobot {
 		rightDriveEncoder.setDistancePerPulse(1);
     leftDriveEncoder.setReverseDirection(true);
 
-    teleop.addParallel(teleopDrive);
+    //teleop.addParallel(teleopDrive);
+    teleop.addSequential(alignHatch);
+    //test.addSequential(alignHatch);
 
     CameraServer.getInstance().startAutomaticCapture(0);
   }
@@ -123,9 +125,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
 
-    compressor.setClosedLoopControl(true);
+    compressor.setClosedLoopControl(false); //set to true 
 
-    buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
+    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
 
     teleop.start();
 
@@ -136,7 +138,7 @@ public class Robot extends TimedRobot {
 
     Scheduler.getInstance().run();
 
-    Result arcadeResult = arcadeMode.drive(joystick.getY(), joystick.getTwist());
+    //Result arcadeResult = arcadeMode.drive(joystick.getY(), joystick.getTwist());
 
   }
 
@@ -166,35 +168,28 @@ public class Robot extends TimedRobot {
 
   static final double[] EMPTY = {};
 
-  AlignHatch align = new AlignHatch();
+  //AlignHatch align = new AlignHatch();
 
   @Override
   public void testInit(){
 
-    //test.start();
+    test.start();
     //centerDisplacement = new CenterDisplacement();
-    NetworkTable referenceLines = NetworkTableInstance
+    /*NetworkTable referenceLines = NetworkTableInstance
       .getDefault()
       .getTable("GRIP/referenceLines");
-
-
-    
     
     angleArray = referenceLines.getEntry("angle");
     
     lengthArray = referenceLines.getEntry("length");
 
-    
-    SmartDashboard.putData(align);
+    SmartDashboard.putData(align);*/
   }
-
-
-
 
   @Override
   public void testPeriodic() {
 
-    double[] angles = angleArray.getDoubleArray(EMPTY);
+    /*double[] angles = angleArray.getDoubleArray(EMPTY);
     double[] lengths = lengthArray.getDoubleArray(EMPTY);
 
 
@@ -208,8 +203,9 @@ public class Robot extends TimedRobot {
 
     }
 
-    weightedMean /= denom;
+    weightedMean /= denom;*/
 
+    Scheduler.getInstance().run();
 
   }
 }

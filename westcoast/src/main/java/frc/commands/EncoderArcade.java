@@ -34,7 +34,7 @@ public class EncoderArcade extends Command {
 			@Override
 			public void pidWrite(double output) {
 				
-				victorLeft.set(-output);
+				victorLeft.set(output);
 				SmartDashboard.putNumber("Left", output);
 				
 			}
@@ -44,7 +44,7 @@ public class EncoderArcade extends Command {
 			@Override
 			public void pidWrite(double output) {
 				
-				victorRight.set(output);
+				victorRight.set(-output);
 				SmartDashboard.putNumber("Right", output);
 				
 			}
