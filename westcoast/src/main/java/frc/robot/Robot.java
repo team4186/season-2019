@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
 		rightDriveEncoder.setDistancePerPulse(1);
     leftDriveEncoder.setReverseDirection(true);
 
-    //teleop.addParallel(teleopDrive);
+    teleop.addParallel(teleopDrive);
     autonomous.addSequential(alignHatch);
     //test.addSequential(alignHatch);
 
