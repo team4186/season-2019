@@ -120,7 +120,7 @@ public class EncoderDistance extends Command {
 			@Override
 			public void pidWrite(double output) {
 								
-				victorLeft.set(-output);
+				victorLeft.set(output);
 				
 			}
 		});
@@ -151,7 +151,7 @@ public class EncoderDistance extends Command {
 			@Override
 			public void pidWrite(double output) {
 								
-				victorRight.set(output);
+				victorRight.set(-output);
 				
 			}
 		});

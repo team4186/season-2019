@@ -12,6 +12,8 @@ public class EncoderArcade extends Command {
 
 	private PIDController pidLeft;
 	private PIDController pidRight;
+	private SpeedController victorLeft;
+	private SpeedController victorRight;
 	
 	public EncoderArcade(
 			SpeedController victorLeft,
@@ -25,6 +27,9 @@ public class EncoderArcade extends Command {
 		
 		leftEncoder.reset();
 		rightEncoder.reset();
+
+		this.victorLeft = victorLeft;
+		this.victorRight = victorRight;
 		
 		leftEncoder.setPIDSourceType(PIDSourceType.kRate);
 		rightEncoder.setPIDSourceType(PIDSourceType.kRate);
@@ -78,6 +83,9 @@ public class EncoderArcade extends Command {
 	
 	@Override
 	protected void end() {
+
+		victorLeft.stopMotor();
+		victorRight.stopMotor();
 				
 		pidLeft.reset();
 		pidRight.reset();

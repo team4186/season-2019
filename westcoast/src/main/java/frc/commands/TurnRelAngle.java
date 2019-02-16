@@ -21,8 +21,8 @@ public class TurnRelAngle extends Command {
 	
 	private PIDController pidDir;
 	
-	private final double p = 0.004; //Tune + adjust to account for dead zone (use encoders)
-	private final double i = 0.0001;
+	private final double p = 0.0005; //Tune + adjust to account for dead zone (use encoders)
+	private final double i = 0.0; //0.0001, 0.0001, 0.0
 	private final double d = 0.0;
 	
 	private EncoderArcade turnDrive;
@@ -66,7 +66,7 @@ public class TurnRelAngle extends Command {
 			@Override
 			public void pidWrite(double output) {
 				
-				Result arcadeResult = arcadeMode.drive(0.0, output);
+				Result arcadeResult = arcadeMode.drive(0.0, -output);
 				
 				turnDrive.setDrive(15000*arcadeResult.leftSpeed, 15000*arcadeResult.rightSpeed);
 				
@@ -92,6 +92,8 @@ public class TurnRelAngle extends Command {
 	
 	@Override
 	protected void execute() {
+
+		System.out.println(navx.getAngle());
 		
 	}
 	
