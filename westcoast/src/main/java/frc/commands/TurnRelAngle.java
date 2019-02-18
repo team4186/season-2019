@@ -3,9 +3,7 @@ package frc.commands;
 import frc.robot.ArcadeMode;
 import frc.robot.ArcadeMode.Result;
 import frc.robot.DirectionRef;
-
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -16,68 +14,55 @@ public class TurnRelAngle extends Command {
 
 	private final AHRS navx;	
 	private final double direction;
-	
 	private DirectionRef absAngle;
+	private EncoderArcade turnDrive;
 	
 	private PIDController pidDir;
-	
 	private final double p = 0.0005; //Tune + adjust to account for dead zone (use encoders)
 	private final double i = 0.0; //0.0001, 0.0001, 0.0
 	private final double d = 0.0;
-	
-	private EncoderArcade turnDrive;
 	
 	public TurnRelAngle(
         AHRS navx, 
         double direction, 
         DirectionRef absAngle, 
         EncoderArcade turnDrive, 
-        ArcadeMode arcadeMode
-        ) {
-		
+        ArcadeMode arcadeMode) {
+
 		this.navx = navx;
 		this.direction = direction;
 		this.turnDrive = turnDrive;
 		this.absAngle = absAngle;
 				
-		pidDir = new PIDController(p, i, d, new PIDSource() {
-			
+		pidDir = new PIDController(p, i, d, 
+		new PIDSource() {	
 			@Override
 			public void setPIDSourceType(PIDSourceType pidSource) {
-				
 			}
 			
 			@Override
 			public double pidGet() {
-
 				//return adjustAngle(navx.getAngle());
 				return navx.getAngle();
-				
 			}
 			
 			@Override
-			public PIDSourceType getPIDSourceType() {
-				
+			public PIDSourceType getPIDSourceType() {	
 				return PIDSourceType.kDisplacement;
-			
 			}
-		}, new PIDOutput() {
-			
+		}, 
+		new PIDOutput() {
 			@Override
-			public void pidWrite(double output) {
-				
+			public void pidWrite(double output) {	
 				Result arcadeResult = arcadeMode.drive(0.0, -output);
 				
 				turnDrive.setDrive(15000*arcadeResult.leftSpeed, 15000*arcadeResult.rightSpeed);
-				
 			}
 		});
-		
 	}
 	
 	@Override
-	protected void initialize() {
-				
+	protected void initialize() {			
 		navx.reset();
 		pidDir.setInputRange(-180.0, 180.0);
 		pidDir.setAbsoluteTolerance(1.0);
@@ -87,30 +72,22 @@ public class TurnRelAngle extends Command {
 		pidDir.enable();
 		
 		turnDrive.start();
-		
 	}
 	
 	@Override
 	protected void execute() {
-
-		System.out.println(navx.getAngle());
-		
+		System.out.println(navx.getAngle());	
 	}
 	
 	@Override
-	protected boolean isFinished() {
-		
+	protected boolean isFinished() {	
 		return pidDir.onTarget();
-		
 	}
 	
 	@Override
-	protected void end() {
-		
+	protected void end() {	
 		absAngle.absAngle = direction;
 		turnDrive.cancel();
-		pidDir.reset();
-		
+		pidDir.reset();	
 	}
-	
 }

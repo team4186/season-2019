@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class EncoderDistance extends Command {
-	
+		
 	private final Encoder leftEncoder;
 	private final Encoder rightEncoder;
     private double distance;
@@ -27,132 +27,101 @@ public class EncoderDistance extends Command {
         Encoder rightEncoder, 
         SpeedController victorLeft, 
         SpeedController victorRight, 
-        double distance
-        ) {
-		
+		double distance) {	
+
 		this.leftEncoder = leftEncoder;
 		this.rightEncoder = rightEncoder;
 		this.distance = distance;
 		
-		pidLeft = new PIDController(0.00001, 0.00000005, 0.00001, new PIDSource() {
-			
+		pidLeft = new PIDController(0.00001, 0.00000005, 0.00001, 
+		new PIDSource() {	
 			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {
-				
+			public void setPIDSourceType(PIDSourceType pidSource) {	
 			}
 			
 			@Override
 			public double pidGet() {
-
-				return leftEncoder.get();
-				
+				return leftEncoder.get();	
 			}
 			
 			@Override
-			public PIDSourceType getPIDSourceType() {
-				
-				return PIDSourceType.kDisplacement;
-			
+			public PIDSourceType getPIDSourceType() {	
+				return PIDSourceType.kDisplacement;			
 			}
-		}, new PIDOutput() {
-			
+		},
+		new PIDOutput() {	
 			@Override
-			public void pidWrite(double output) {
-								
-				leftSetpoint = output;
-				
+			public void pidWrite(double output) {					
+				leftSetpoint = output;	
 			}
 		});
 		
-		pidRight = new PIDController(0.00001, 0.00000005, 0.00001, new PIDSource() {
-			
+		pidRight = new PIDController(0.00001, 0.00000005, 0.00001, 
+		new PIDSource() {
 			@Override
 			public void setPIDSourceType(PIDSourceType pidSource) {
-				
 			}
 			
 			@Override
 			public double pidGet() {
-
-				return rightEncoder.get();
-				
+				return rightEncoder.get();	
 			}
 			
 			@Override
-			public PIDSourceType getPIDSourceType() {
-				
+			public PIDSourceType getPIDSourceType() {	
 				return PIDSourceType.kDisplacement;
-			
 			}
-		}, new PIDOutput() {
-			
+		}, 
+		new PIDOutput() {	
 			@Override
-			public void pidWrite(double output) {
-								
-				rightSetpoint = output;
-				
+			public void pidWrite(double output) {					
+				rightSetpoint = output;	
 			}
 		});
 
-		speedLeft = new PIDController(0.0001, 0.0, 0.0, new PIDSource() {
-			
+		speedLeft = new PIDController(0.0001, 0.0, 0.0, new PIDSource() {	
 			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {
-				
+			public void setPIDSourceType(PIDSourceType pidSource) {	
 			}
 			
 			@Override
 			public double pidGet() {
-
 				//return adjustAngle(navx.getAngle());
 				return leftEncoder.getRate();
-				
 			}
 			
 			@Override
-			public PIDSourceType getPIDSourceType() {
-				
+			public PIDSourceType getPIDSourceType() {	
 				return PIDSourceType.kRate;
-			
 			}
-		}, new PIDOutput() {
-			
+		}, 
+		new PIDOutput() {	
 			@Override
-			public void pidWrite(double output) {
-								
-				victorLeft.set(output);
-				
+			public void pidWrite(double output) {					
+				victorLeft.set(output);	
 			}
 		});
 		
-		speedRight = new PIDController(0.0001, 0.0, 0.0, new PIDSource() {
-			
+		speedRight = new PIDController(0.0001, 0.0, 0.0, new PIDSource() {	
 			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {
-				
+			public void setPIDSourceType(PIDSourceType pidSource) {	
 			}
 			
 			@Override
 			public double pidGet() {
-
 				//return adjustAngle(navx.getAngle());
-				return rightEncoder.getRate();
-				
+				return rightEncoder.getRate();	
 			}
 			
 			@Override
-			public PIDSourceType getPIDSourceType() {
-				
+			public PIDSourceType getPIDSourceType() {	
 				return PIDSourceType.kRate;
-			
 			}
-		}, new PIDOutput() {
-			
+		}, 
+		new PIDOutput() {	
 			@Override
 			public void pidWrite(double output) {
-								
-				victorRight.set(-output);
-				
+				victorRight.set(-output);	
 			}
 		});
 	}
@@ -190,42 +159,31 @@ public class EncoderDistance extends Command {
 		pidRight.enable();
 		speedLeft.enable();
 		speedRight.enable();
-		
 	}
 	
 	@Override
-	protected void execute() {
-		
-		setDrive(leftSetpoint, rightSetpoint);
-		
+	protected void execute() {	
+		setDrive(leftSetpoint, rightSetpoint);	
 		System.out.println(leftEncoder.get());
-						
 	}
 	
 	@Override
-	protected boolean isFinished() {
-		
-		return pidLeft.onTarget() && pidRight.onTarget();
-		
+	protected boolean isFinished() {	
+		return pidLeft.onTarget() && pidRight.onTarget();	
 	}
 	
 	@Override
-	protected void end() {
-		
+	protected void end() {	
 		pidLeft.reset();
 		pidRight.reset();
 		
 		speedLeft.reset();
 		speedRight.reset();
-		System.out.println("ded");
-		
+		System.out.println("ded");	
 	}
 	
-	public void setDrive(double leftSetpoint, double rightSetpoint) {
-		
+	public void setDrive(double leftSetpoint, double rightSetpoint) {	
 		speedLeft.setSetpoint(leftSetpoint*15000);
-		speedRight.setSetpoint(rightSetpoint*15000);
-		
+		speedRight.setSetpoint(rightSetpoint*15000);	
 	}
-	
 }

@@ -10,38 +10,28 @@ public class SetMotor extends Command {
 
 	public SetMotor(
         SpeedController motor, 
-        double value
-        ) {
-		
+		double value) {
+			
 		this.motor = motor;
-		this.value = value;
-		
+		this.value = value;	
 	}
 	
 	@Override
-	protected void initialize() {
-		
+	protected void initialize() {	
 	}
 	
 	@Override
-	protected void execute() {
-		
-        motor.set(value);
-        
+	protected void execute() {	
+        motor.set(value);   
 	}
 	
 	@Override
 	protected boolean isFinished() {
-		
-		return false;
-		
+		return false;	
 	}
 	
 	@Override
-	protected void end() {
-		
-		motor.stopMotor();
-		
+	protected void end() {	
+		motor.stopMotor();	
 	}
-	
 }

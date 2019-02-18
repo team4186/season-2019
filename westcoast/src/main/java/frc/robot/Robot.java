@@ -91,11 +91,10 @@ public class Robot extends TimedRobot {
   SetMotor winchDown = new SetMotor(winchMotor, -1.0);
   SetMotor winchUp = new SetMotor(winchMotor, 1.0);
 
-  Command deployHatch()
-  {
+  Command deployHatch() {
     CommandGroup command = new CommandGroup();
     command.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    command.addParallel(deployPistons);
+    command.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
 
     return command;
   }
@@ -107,8 +106,7 @@ public class Robot extends TimedRobot {
   CommandGroup robotMain = new CommandGroup();
 
   @Override
-  public void robotInit() 
-  {
+  public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -124,7 +122,7 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture(0);
 
     //Add Commands to robotMain sequence
-    robotMain.addParallel(teleopDrive);
+    /*robotMain.addParallel(teleopDrive);
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
     
@@ -175,18 +173,18 @@ public class Robot extends TimedRobot {
       }
     });
 
-    robotMain.start();
+    robotMain.start();*/
+
+    teleop.addParallel(teleopDrive);
   }
 
   @Override
-  public void robotPeriodic() 
-  {
+  public void robotPeriodic() {
     Scheduler.getInstance().run();
   }
 
   @Override
-  public void autonomousInit() 
-  {
+  public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -197,8 +195,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() 
-  {
+  public void autonomousPeriodic() {
     /*switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -213,34 +210,71 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopInit() 
-  {
+  public void teleopInit() {
     compressor.setClosedLoopControl(true);
 
-    buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
+    //buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    
+    topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
+    
+    bottomTrigger.whenPressed(deployPistons);
+    bottomTrigger.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute()
+      {
+        deployPistons.cancel();
+      }
+    });
+
+    dpadUp.whileHeld(new MotorWithLimitSwitch(elevatorMotor, 0.5, elevatorTop, elevatorBottom));
+    dpadDown.whileHeld(new MotorWithLimitSwitch(elevatorMotor, -0.5, elevatorTop, elevatorBottom));
+    dpadLeft.whileHeld(new MotorWithLimitSwitch(gantryMotor, 0.5, gantryLeft, gantryRight));
+    dpadRight.whileHeld(new MotorWithLimitSwitch(gantryMotor, -0.5, gantryLeft, gantryRight));
+
+    fireButton.toggleWhenPressed(deployHatch());
+
+    buttonA.whenPressed(winchUp);
+    buttonA.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute() {
+        winchUp.cancel();
+      }
+    });
+
+    buttonB.whenPressed(winchDown);
+    buttonB.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute() {
+        winchDown.cancel();
+      }
+    });
+
+    buttonC.whenPressed(wedgePistons);
+    buttonC.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute() {
+        wedgePistons.cancel();
+      }
+    });
 
     teleop.start();
   }
 
   @Override
-  public void teleopPeriodic() 
-  {
+  public void teleopPeriodic() {
     Scheduler.getInstance().run();
   }
 
   @Override
-  public void disabledInit() 
-  {
-    if(autonomous != null)
-    {
+  public void disabledInit() {
+    if(autonomous != null) {
       autonomous.cancel();
     }
 
     teleop.cancel();
 
-    if(test != null)
-    {
+    if(test != null) {
       test.cancel();
     }
 
@@ -248,14 +282,12 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testInit()
-  {
+  public void testInit() {
     test.start();
   }
 
   @Override
-  public void testPeriodic() 
-  {
+  public void testPeriodic() {
     Scheduler.getInstance().run();
   }
 }

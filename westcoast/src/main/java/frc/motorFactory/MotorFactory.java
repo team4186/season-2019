@@ -2,8 +2,6 @@ package frc.motorFactory;
 
 import edu.wpi.first.wpilibj.SpeedController;
 
-public interface MotorFactory{
-
+public interface MotorFactory {
     SpeedController create(int channelMain, int channel1, int channel2);
-
 }
