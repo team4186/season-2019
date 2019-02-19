@@ -29,6 +29,7 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 
 public class Robot extends TimedRobot {
  
@@ -49,11 +50,15 @@ public class Robot extends TimedRobot {
   private final WPI_TalonSRX elevatorMotor = new WPI_TalonSRX(8);
   private final WPI_TalonSRX gantryMotor = new WPI_TalonSRX(9);
 
+  //Servos
+  private final Servo servo = new Servo(0);
+
   //Input
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3);
   private final JoystickButton buttonB = new JoystickButton(joystick, 4);
   private final JoystickButton buttonC = new JoystickButton(joystick, 5);
+  private final JoystickButton buttonE = new JoystickButton(joystick, 8);
   private final JoystickButton topTrigger = new JoystickButton(joystick, 1);
   private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6);
   private final JoystickButton fireButton = new JoystickButton(joystick, 2);
@@ -99,6 +104,14 @@ public class Robot extends TimedRobot {
     return command;
   }
 
+  Command alignForDelivery() {
+    CommandGroup command = new CommandGroup();
+    command.addSequential(new HatchBackup(encoderArcade));
+    command.addSequential(new AlignHatchServo(servo));
+    
+    return command;
+  }
+
   //Command Groups
   CommandGroup teleop = new CommandGroup();
   CommandGroup autonomous = new CommandGroup();
@@ -120,60 +133,6 @@ public class Robot extends TimedRobot {
     leftDriveEncoder.setReverseDirection(true);
 
     CameraServer.getInstance().startAutomaticCapture(0);
-
-    //Add Commands to robotMain sequence
-    /*robotMain.addParallel(teleopDrive);
-
-    topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-    
-    bottomTrigger.whenPressed(deployPistons);
-    bottomTrigger.whenReleased(new InstantCommand()
-    {
-      @Override
-      protected void execute()
-      {
-        deployPistons.cancel();
-      }
-    });
-
-    dpadUp.whileHeld(new MotorWithLimitSwitch(elevatorMotor, 0.5, elevatorTop, elevatorBottom));
-    dpadDown.whileHeld(new MotorWithLimitSwitch(elevatorMotor, -0.5, elevatorTop, elevatorBottom));
-    dpadLeft.whileHeld(new MotorWithLimitSwitch(gantryMotor, 0.5, gantryLeft, gantryRight));
-    dpadRight.whileHeld(new MotorWithLimitSwitch(gantryMotor, -0.5, gantryLeft, gantryRight));
-
-    fireButton.toggleWhenPressed(deployHatch());
-
-    buttonA.whenPressed(winchUp);
-    buttonA.whenReleased(new InstantCommand()
-    {
-      @Override
-      protected void execute()
-      {
-        winchUp.cancel();
-      }
-    });
-
-    buttonB.whenPressed(winchDown);
-    buttonB.whenReleased(new InstantCommand()
-    {
-      @Override
-      protected void execute()
-      {
-        winchDown.cancel();
-      }
-    });
-
-    buttonC.whenPressed(wedgePistons);
-    buttonC.whenReleased(new InstantCommand()
-    {
-      @Override
-      protected void execute()
-      {
-        wedgePistons.cancel();
-      }
-    });
-
-    robotMain.start();*/
 
     teleop.addParallel(teleopDrive);
   }
@@ -211,11 +170,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    compressor.setClosedLoopControl(true);
-
-    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    //buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    compressor.setClosedLoopControl(false);
     
+    buttonE.toggleWhenPressed(new AlignHatchServo(servo));
+
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
     
     bottomTrigger.whenPressed(deployPistons);
@@ -260,10 +218,12 @@ public class Robot extends TimedRobot {
 
     teleop.start();
   }
-
+ 
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+
+    servo.set(joystick.getX());
   }
 
   @Override
