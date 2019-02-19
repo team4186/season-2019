@@ -7,25 +7,16 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.motorFactory.*;
-import frc.pidSources.CenterDisplacement;
-import frc.pidSources.WallMidpoint;
-import com.kauailabs.navx.frc.*;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
-import frc.robot.ArcadeMode.Result;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -34,11 +25,6 @@ import edu.wpi.first.wpilibj.Servo;
 public class Robot extends TimedRobot {
  
   MotorFactory hybridFactory = new MotorFactoryHybrid();
-
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   //Drive system
   private final SpeedController leftMain = hybridFactory.create(5, 4, 6);
@@ -70,14 +56,12 @@ public class Robot extends TimedRobot {
   //Sensors
   private final Encoder leftDriveEncoder = new Encoder(4, 5);
   private final Encoder rightDriveEncoder = new Encoder(6, 7);
-  private final AHRS navx = new AHRS(SPI.Port.kMXP);
   private final DigitalInput elevatorTop = new DigitalInput(0);
   private final DigitalInput elevatorBottom = new DigitalInput(1);
   private final DigitalInput gantryLeft = new DigitalInput(2);
   private final DigitalInput gantryRight = new DigitalInput(3);
 
   //Auxiliary Objects
-  private ArcadeMode arcadeMode = new ArcadeMode();
   public DirectionRef absAngle = new DirectionRef();
 
   //Pneumatics
@@ -108,7 +92,7 @@ public class Robot extends TimedRobot {
     CommandGroup command = new CommandGroup();
     command.addSequential(new HatchBackup(encoderArcade));
     command.addSequential(new AlignHatchServo(servo));
-    
+
     return command;
   }
 
@@ -120,10 +104,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     joystick.setTwistChannel(5);
 
     drive.setSafetyEnabled(false);
@@ -144,10 +124,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-
     compressor.setClosedLoopControl(false);
 
     autonomous.start();
@@ -155,16 +131,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    /*switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }*/
-
     Scheduler.getInstance().run();
   }
 

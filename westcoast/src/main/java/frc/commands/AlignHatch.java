@@ -1,15 +1,10 @@
 package frc.commands;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.pidSources.WallMidpoint;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class AlignHatch extends Command {	
     
@@ -50,7 +45,6 @@ public class AlignHatch extends Command {
 	@Override
 	protected void execute() {
 		
-		//System.out.println(power);
 		SmartDashboard.putNumber("Output", power);
 		SmartDashboard.putBoolean("IsActive", pid.onTarget());
 
