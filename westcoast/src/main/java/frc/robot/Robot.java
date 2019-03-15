@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,17 +42,19 @@ public class Robot extends TimedRobot {
 
   //Input
   private final Joystick joystick = new Joystick(0);
-  private final JoystickButton buttonA = new JoystickButton(joystick, 3);
-  private final JoystickButton buttonB = new JoystickButton(joystick, 4);
-  private final JoystickButton buttonC = new JoystickButton(joystick, 5);
-  private final JoystickButton buttonE = new JoystickButton(joystick, 8);
-  private final JoystickButton topTrigger = new JoystickButton(joystick, 1);
-  private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6);
-  private final JoystickButton fireButton = new JoystickButton(joystick, 2);
-  private final JoystickButton dpadUp  = new JoystickButton(joystick, 20);
-  private final JoystickButton dpadDown  = new JoystickButton(joystick, 21);
-  private final JoystickButton dpadLeft  = new JoystickButton(joystick, 22);
-  private final JoystickButton dpadRight  = new JoystickButton(joystick, 23);
+  private final JoystickButton buttonA = new JoystickButton(joystick, 3); //Ramp ascend (hold)
+  private final JoystickButton buttonB = new JoystickButton(joystick, 4); //Ramp descend (hold)
+  private final JoystickButton buttonC = new JoystickButton(joystick, 5); //Deploy ramp (hold)
+  private final JoystickButton buttonE = new JoystickButton(joystick, 8); //Servo align (toggle)
+  private final JoystickButton topTrigger = new JoystickButton(joystick, 1); //Tongue (toggle)
+  private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6); //Hatch push (hold)
+  private final JoystickButton fireButton = new JoystickButton(joystick, 2); //Tongue + hatch (toggle)
+  private final JoystickButton dpadUp  = new JoystickButton(joystick, 20); //Elevator up (hold)
+  private final JoystickButton dpadDown  = new JoystickButton(joystick, 21); //Elevator down (hold)
+  private final JoystickButton dpadLeft  = new JoystickButton(joystick, 22); //Gantry left (hold)
+  private final JoystickButton dpadRight  = new JoystickButton(joystick, 23); //Gantry right (hold)
+  //private final JoystickButton levelTwoUp = new JoystickButton(joystick, 9);
+  private final JoystickButton levelTwoDown = new JoystickButton(joystick, 10); //Level two pistons (toggle)
 
   //Sensors
   private final Encoder leftDriveEncoder = new Encoder(4, 5);
@@ -68,7 +71,9 @@ public class Robot extends TimedRobot {
   private Compressor compressor = new Compressor(10);
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
   private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
-  private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
+  //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
+  private Solenoid rampSolenoid = new Solenoid(11, 0);
+  private Solenoid levelTwoSolenoid = new Solenoid(11, 1);
 
   //Commands
   TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
@@ -76,7 +81,7 @@ public class Robot extends TimedRobot {
   AlignHatch alignHatch = new AlignHatch(encoderArcade);
   EncoderDistance encoderDistance = new EncoderDistance(rightDriveEncoder, leftDriveEncoder, leftMain, rightMain, 1.0);
   ActuateDoubleSolenoid deployPistons = new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
-  ActuateDoubleSolenoid wedgePistons = new ActuateDoubleSolenoid(wedgeSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
+  ActuateSingleSolenoid rampPistons = new ActuateSingleSolenoid(rampSolenoid);
   SetMotor winchDown = new SetMotor(winchMotor, -1.0);
   SetMotor winchUp = new SetMotor(winchMotor, 1.0);
 
@@ -97,10 +102,12 @@ public class Robot extends TimedRobot {
   }
 
   //Command Groups
-  CommandGroup teleop = new CommandGroup();
-  CommandGroup autonomous = new CommandGroup();
-  CommandGroup test = new CommandGroup();
-  CommandGroup robotMain = new CommandGroup();
+  //CommandGroup teleop = new CommandGroup();
+  //CommandGroup autonomous = new CommandGroup();
+  //CommandGroup test = new CommandGroup();
+  CommandGroup teleop;
+  CommandGroup autonomous;
+  CommandGroup test;
 
   @Override
   public void robotInit() {
@@ -112,7 +119,7 @@ public class Robot extends TimedRobot {
 		rightDriveEncoder.setDistancePerPulse(1);
     leftDriveEncoder.setReverseDirection(true);
 
-    CameraServer.getInstance().startAutomaticCapture(0);
+    //CameraServer.getInstance().startAutomaticCapture(0);
 
     teleop.addParallel(teleopDrive);
   }
@@ -124,7 +131,65 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    compressor.setClosedLoopControl(false);
+    if(teleop != null){
+      teleop.cancel();
+    }
+
+    if(test != null){
+      test.cancel();
+    }
+
+    autonomous = new CommandGroup();
+
+    compressor.setClosedLoopControl(true);
+
+    levelTwoDown.toggleWhenPressed(new ActuateSingleSolenoid(levelTwoSolenoid));
+
+    buttonE.toggleWhenPressed(new AlignHatchServo(servo));
+
+    topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
+    
+    bottomTrigger.whenPressed(deployPistons);
+    bottomTrigger.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute()
+      {
+        deployPistons.cancel();
+      }
+    });
+
+    dpadUp.whileHeld(new MotorWithLimitSwitch(elevatorMotor, 0.5, elevatorTop, elevatorBottom));
+    dpadDown.whileHeld(new MotorWithLimitSwitch(elevatorMotor, -0.5, elevatorTop, elevatorBottom));
+    //dpadLeft.whileHeld(new MotorWithLimitSwitch(gantryMotor, 0.5, gantryLeft, gantryRight));
+    //dpadRight.whileHeld(new MotorWithLimitSwitch(gantryMotor, -0.5, gantryLeft, gantryRight));
+    dpadLeft.whileHeld(new DriveServo(servo, -1.0, -0.01));
+    dpadRight.whileHeld(new DriveServo(servo, 1.0, 0.01));
+
+    fireButton.toggleWhenPressed(deployHatch());
+
+    buttonA.whenPressed(winchUp);
+    buttonA.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute() {
+        winchUp.cancel();
+      }
+    });
+
+    buttonB.whenPressed(winchDown);
+    buttonB.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute() {
+        winchDown.cancel();
+      }
+    });
+
+    buttonC.whenPressed(rampPistons);
+    buttonC.whenReleased(new InstantCommand() {
+      @Override
+      protected void execute() {
+        rampPistons.cancel();
+      }
+    });
 
     autonomous.start();
   }
@@ -136,7 +201,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    compressor.setClosedLoopControl(false);
+    if(autonomous != null){
+      teleop.cancel();
+    }
+
+    if(test != null){
+      test.cancel();
+    }
+
+    teleop = new CommandGroup();
+
+    compressor.setClosedLoopControl(true);
+
+    levelTwoDown.toggleWhenPressed(new ActuateSingleSolenoid(levelTwoSolenoid));
     
     buttonE.toggleWhenPressed(new AlignHatchServo(servo));
 
@@ -174,11 +251,11 @@ public class Robot extends TimedRobot {
       }
     });
 
-    buttonC.whenPressed(wedgePistons);
+    buttonC.whenPressed(rampPistons);
     buttonC.whenReleased(new InstantCommand() {
       @Override
       protected void execute() {
-        wedgePistons.cancel();
+        rampPistons.cancel();
       }
     });
 
@@ -189,26 +266,38 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    servo.set(joystick.getX());
+    //servo.set(joystick.getX());
   }
 
   @Override
   public void disabledInit() {
+    Scheduler.getInstance().removeAll();
+
     if(autonomous != null) {
       autonomous.cancel();
     }
 
-    teleop.cancel();
+    if(teleop != null){
+      teleop.cancel();
+    }
 
     if(test != null) {
       test.cancel();
     }
-
-    Scheduler.getInstance().removeAll();
   }
 
   @Override
   public void testInit() {
+    if(teleop != null){
+      teleop.cancel();
+    }
+
+    if(autonomous != null){
+      test.cancel();
+    }
+
+    test = new CommandGroup();
+
     test.start();
   }
 
