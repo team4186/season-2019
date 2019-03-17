@@ -50,12 +50,7 @@ public class Robot extends TimedRobot {
   private final JoystickButton fireButton = new JoystickButton(joystick, 2); //Tongue + hatch (toggle)
   private final JoystickButton dpadUp  = new JoystickButton(joystick, 20); //Elevator up (hold)
   private final JoystickButton dpadDown  = new JoystickButton(joystick, 21); //Elevator down (hold)
-  private final JoystickButton dpadLeft  = new JoystickButton(joystick, 22); //Gantry left (hold)
-  private final JoystickButton dpadRight  = new JoystickButton(joystick, 23); //Gantry right (hold)
-  //private final JoystickButton levelTwoUp = new JoystickButton(joystick, 9);
-  private final JoystickButton levelTwoDown = new JoystickButton(joystick, 7); //Level two pistons (toggle)
-  private final JoystickButton moveCarriageLeft = new JoystickButton(joystick, 11);
-  private final JoystickButton moveCarriageRight = new JoystickButton(joystick, 12);
+  private final JoystickButton buttonD = new JoystickButton(joystick, 7); //Level two pistons (toggle)
 
   //Sensors
   private final Encoder leftDriveEncoder = new Encoder(0, 1);
@@ -102,14 +97,6 @@ public class Robot extends TimedRobot {
     return command;
   }
 
-  //Command Groups
-  //CommandGroup teleop = new CommandGroup();
-  //CommandGroup autonomous = new CommandGroup();
-  //CommandGroup test = new CommandGroup();
-  //CommandGroup teleop;
-  //CommandGroup autonomous;
-  //CommandGroup test;
-
   @Override
   public void robotInit() {
     joystick.setTwistChannel(5);
@@ -129,49 +116,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    /*if(autonomous != null){
-      autonomous.cancel();
-    }
-
-    if(teleop != null){
-      teleop.cancel();
-    }
-
-    if(test != null){
-      test.cancel();
-    }*/
-
-    //autonomous = new CommandGroup();
-
-    //autonomous.addParallel(teleopDrive);
-
     teleopDrive.cancel();
 
     compressor.setClosedLoopControl(true);
 
-    levelTwoDown.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
+    buttonD.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
 
     buttonE.toggleWhenPressed(new AlignHatchServo(servo));
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-    
-    /*bottomTrigger.whenPressed(deployPistons);
-    bottomTrigger.whenReleased(new InstantCommand() {
-      @Override
-      protected void execute()
-      {
-        deployPistons.cancel();
-      }
-    });*/
 
     dpadUp.whileHeld(new SetMotor(elevatorMotor, 0.5));
     dpadDown.whileHeld(new SetMotor(elevatorMotor, -0.5));
-    //dpadLeft.whileHeld(new MotorWithLimitSwitch(gantryMotor, 0.5, gantryLeft, gantryRight));
-    //dpadRight.whileHeld(new MotorWithLimitSwitch(gantryMotor, -0.5, gantryLeft, gantryRight));
-    moveCarriageLeft.whileHeld(new DriveServo(servo, -1.0, 0.0005));
-    moveCarriageRight.whileHeld(new DriveServo(servo, 1.0, 0.0005));
 
-    //fireButton.toggleWhenPressed(deployHatch());
     fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
     fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
 
@@ -213,48 +170,20 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    /*if(teleop != null){
-      teleop.cancel();
-    }
-
-    if(autonomous != null){
-      teleop.cancel();
-    }
-
-    if(test != null){
-      test.cancel();
-    }*/
-
-    //teleop = new CommandGroup();
-
-    //teleop.addParallel(teleopDrive);
-
     teleopDrive.cancel();
 
     compressor.setClosedLoopControl(true);
 
-    levelTwoDown.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
+    buttonD.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
     
     buttonE.toggleWhenPressed(new AlignHatchServo(servo));
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
 
-    /*bottomTrigger.whenPressed(deployPistons);
-    bottomTrigger.whenReleased(new InstantCommand() {
-      @Override
-      protected void execute(){
-        deployPistons.cancel();
-      }
-    });*/
-
     dpadUp.whileHeld(new SetMotor(elevatorMotor, 0.5));
     dpadDown.whileHeld(new SetMotor(elevatorMotor, -0.5));
-    //dpadLeft.whileHeld(new MotorWithLimitSwitch(gantryMotor, 0.5, gantryLeft, gantryRight));
-    //dpadRight.whileHeld(new MotorWithLimitSwitch(gantryMotor, -0.5, gantryLeft, gantryRight));
-    levelTwoDown.whileHeld(new DriveServo(servo, -1.0, 0.05));
     buttonE.whileHeld(new DriveServo(servo, 1.0, 0.05));
 
-    //fireButton.toggleWhenPressed(deployHatch());
     fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
     fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
 
@@ -292,50 +221,20 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kReverse ? true : false);
 
     servo.set(0.5*(joystick.getRawAxis(4) + 1));
-    //servo.set(joystick.getX());
   }
 
   @Override
   public void disabledInit() {
     Scheduler.getInstance().removeAll();
-
-    /*if(autonomous != null) {
-      autonomous.cancel();
-    }
-
-    if(teleop != null){
-      teleop.cancel();
-    }
-
-    if(test != null) {
-      test.cancel();
-    }*/
   }
 
   @Override
   public void testInit() {
-    /*if(test != null){
-      test.cancel();
-    }
-
-    if(teleop != null){
-      teleop.cancel();
-    }
-
-    if(autonomous != null){
-      test.cancel();
-    }
-
-    test = new CommandGroup();
-
-    test.start();*/
-
     compressor.setClosedLoopControl(false);
   }
 
   @Override
   public void testPeriodic() {
-    //Scheduler.getInstance().run();
     servo.set(0.5*(joystick.getRawAxis(4) + 1));
   }
 }
