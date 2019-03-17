@@ -38,11 +38,10 @@ public class DriveServo extends Command {
 			servoTarget += 0.01;
 			servo.set(servoTarget);
 		}*/
-
-		if(servo.get() > 0.0 + rate && servo.get() < 1.0 - rate){
-			servoTarget += rate * direction;
-			servo.set(servoTarget);
-		}
+		System.out.println("Servo: " + servo.get() + ", rate: " + rate + ", direction: " + direction);
+		
+		servo.set(servo.get() + rate * direction);
+		
 	}
 	
 	@Override

@@ -13,6 +13,18 @@ public class MotorFactoryHybrid implements MotorFactory {
         motor1.follow(motorMain);
         motor2.follow(motorMain);
 
+        /*motorMain.configPeakCurrentLimit(22);
+        motorMain.configContinuousCurrentLimit(20);
+        motorMain.configPeakCurrentDuration(50);
+        motorMain.enableCurrentLimit(true);*/     
+
         return motorMain;
     }    
+
+    /*public void currentLimitTalon(WPI_TalonSRX talon){
+        talon.configPeakCurrentLimit(22);
+        talon.configContinuousCurrentLimit(20);
+        talon.configPeakCurrentDuration(50);
+        talon.enableCurrentLimit(true);
+    }*/
 }

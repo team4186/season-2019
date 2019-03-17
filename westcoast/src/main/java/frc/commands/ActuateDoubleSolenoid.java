@@ -30,7 +30,6 @@ public class ActuateDoubleSolenoid extends Command {
 	protected void execute() {
 		
 		solenoid.set(direction);
-		System.out.println("Running");
 		
 	}
 	
@@ -45,7 +44,6 @@ public class ActuateDoubleSolenoid extends Command {
 	protected void end() {
 
 		solenoid.set(endDirection);
-		System.out.println("Finished");
 		
 	}
 	
