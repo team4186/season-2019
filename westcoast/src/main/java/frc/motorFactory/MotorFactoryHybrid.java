@@ -9,14 +9,14 @@ public class MotorFactoryHybrid implements MotorFactory {
         WPI_TalonSRX motorMain = new WPI_TalonSRX(channelMain);
         WPI_VictorSPX motor1 = new WPI_VictorSPX(channel1);
         WPI_VictorSPX motor2 = new WPI_VictorSPX(channel2);
+
+        motorMain.configPeakCurrentLimit(22);
+        motorMain.configContinuousCurrentLimit(20);
+        motorMain.configPeakCurrentDuration(50);
+        motorMain.enableCurrentLimit(true);
  
         motor1.follow(motorMain);
         motor2.follow(motorMain);
-
-        /*motorMain.configPeakCurrentLimit(22);
-        motorMain.configContinuousCurrentLimit(20);
-        motorMain.configPeakCurrentDuration(50);
-        motorMain.enableCurrentLimit(true);*/     
 
         return motorMain;
     }    

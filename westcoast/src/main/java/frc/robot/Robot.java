@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -17,7 +18,6 @@ import frc.motorFactory.*;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -66,28 +66,20 @@ public class Robot extends TimedRobot {
   //Pneumatics
   private Compressor compressor = new Compressor(10);
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
-  private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
+  // private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
   //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
-  private Solenoid rampSolenoid = new Solenoid(11, 0);
-  private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(10, 5, 4);
+  // private Solenoid rampSolenoid = new Solenoid(10, 0);
+  // private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(10, 5, 4);
 
   //Commands
   TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
   EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0); //encoders are switched
   AlignHatch alignHatch = new AlignHatch(encoderArcade);
   EncoderDistance encoderDistance = new EncoderDistance(rightDriveEncoder, leftDriveEncoder, leftMain, rightMain, 1.0);
-  ActuateDoubleSolenoid deployPistons = new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
-  ActuateSingleSolenoid rampPistons = new ActuateSingleSolenoid(rampSolenoid);
+  // ActuateDoubleSolenoid deployPistons = new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
+  // ActuateSingleSolenoid rampPistons = new ActuateSingleSolenoid(rampSolenoid);
   SetMotor winchDown = new SetMotor(winchMotor, -1.0);
   SetMotor winchUp = new SetMotor(winchMotor, 1.0);
-
-  /*Command deployHatch() {
-    CommandGroup command = new CommandGroup();
-    command.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    command.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
-
-    return command;
-  }*/
 
   Command alignForDelivery() {
     CommandGroup command = new CommandGroup();
@@ -107,7 +99,7 @@ public class Robot extends TimedRobot {
 		rightDriveEncoder.setDistancePerPulse(1);
     leftDriveEncoder.setReverseDirection(true);
 
-    CameraServer.getInstance().startAutomaticCapture(0);
+    // CameraServer.getInstance().startAutomaticCapture(0);
   }
 
   @Override
@@ -120,17 +112,18 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-    buttonD.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
+    // buttonD.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
 
     buttonE.toggleWhenPressed(new AlignHatchServo(servo));
 
-    topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
+    topTrigger.whenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse));
+    topTrigger.whenReleased(new ActuateDoubleSolenoid(flipperSolenoid, Value.kForward));
+
 
     dpadUp.whileHeld(new SetMotor(elevatorMotor, 0.5));
     dpadDown.whileHeld(new SetMotor(elevatorMotor, -0.5));
 
-    fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    // fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
 
     buttonA.whenPressed(winchUp);
     buttonA.whenReleased(new InstantCommand() {
@@ -148,13 +141,13 @@ public class Robot extends TimedRobot {
       }
     });
 
-    buttonC.whenPressed(rampPistons);
-    buttonC.whenReleased(new InstantCommand() {
-      @Override
-      protected void execute() {
-        rampPistons.cancel();
-      }
-    });
+    // buttonC.whenPressed(rampPistons);
+    // buttonC.whenReleased(new InstantCommand() {
+    //   @Override
+    //   protected void execute() {
+    //     rampPistons.cancel();
+    //   }
+    // });
 
     teleopDrive.start();
   }
@@ -163,7 +156,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
 
-    SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kReverse ? true : false);
+    // SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kReverse ? true : false);
   
     servo.set(0.5*(joystick.getRawAxis(4) + 1));
   }
@@ -174,18 +167,19 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-    buttonD.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
+    // buttonD.toggleWhenPressed(new ActuateDoubleSolenoid(levelTwoSolenoid, Value.kReverse, Value.kForward));
     
     buttonE.toggleWhenPressed(new AlignHatchServo(servo));
 
-    topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
+    topTrigger.whenActive(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse));
+    topTrigger.whenInactive(new ActuateDoubleSolenoid(flipperSolenoid, Value.kForward));
 
     dpadUp.whileHeld(new SetMotor(elevatorMotor, 0.5));
     dpadDown.whileHeld(new SetMotor(elevatorMotor, -0.5));
     buttonE.whileHeld(new DriveServo(servo, 1.0, 0.05));
 
-    fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    // fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
+    // fireButton.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
 
     buttonA.whenPressed(winchUp);
     buttonA.whenReleased(new InstantCommand() {
@@ -203,13 +197,13 @@ public class Robot extends TimedRobot {
       }
     });
 
-    buttonC.whenPressed(rampPistons);
-    buttonC.whenReleased(new InstantCommand() {
-      @Override
-      protected void execute() {
-        rampPistons.cancel();
-      }
-    });
+    // buttonC.whenPressed(rampPistons);
+    // buttonC.whenReleased(new InstantCommand() {
+    //   @Override
+    //   protected void execute() {
+    //     rampPistons.cancel();
+    //   }
+    // });
 
     teleopDrive.start();
   }

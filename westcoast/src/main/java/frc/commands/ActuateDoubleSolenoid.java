@@ -8,43 +8,25 @@ public class ActuateDoubleSolenoid extends Command {
 
 	private final DoubleSolenoid solenoid;
 	private final Value direction;
-	private final Value endDirection;
 	
-	public ActuateDoubleSolenoid(
-		DoubleSolenoid solenoid,
-		Value direction,
-		Value endDirection
-        ) 
-        {
-			this.direction = direction;
-			this.solenoid = solenoid;
-			this.endDirection = endDirection;
-        }
-	
-	@Override
-	protected void initialize() {
-		
+	public ActuateDoubleSolenoid(DoubleSolenoid solenoid, Value direction) {
+		this.direction = direction;
+		this.solenoid = solenoid;
 	}
 	
 	@Override
-	protected void execute() {
-		
-		solenoid.set(direction);
-		
+	protected void initialize() {
+		System.out.println("actuate");
+	}
+	
+	@Override
+	protected void execute() {	
+		System.out.println("actuate-execute");
+		solenoid.set(direction);		
 	}
 	
 	@Override
 	protected boolean isFinished() {
-		
-		return false;
-		
+		return true;
 	}
-	
-	@Override
-	protected void end() {
-
-		solenoid.set(endDirection);
-		
-	}
-	
 }
