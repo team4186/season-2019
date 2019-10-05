@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Spark;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,7 +35,7 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 	private Talon leftFrontMotor = new Talon(0);
-	private Talon leftBackMotor = new Talon(1);
+	private Talon leftBackMotor = new Spark(1);
 	private Talon rightFrontMotor = new Talon(2);
 	private Talon rightBackMotor = new Talon(3);
 	

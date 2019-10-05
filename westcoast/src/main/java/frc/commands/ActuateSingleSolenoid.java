@@ -7,9 +7,7 @@ public class ActuateSingleSolenoid extends Command {
 
 	private final Solenoid solenoid;
 	
-	public ActuateSingleSolenoid(
-		Solenoid solenoid
-        ) 
+	public ActuateSingleSolenoid(Solenoid solenoid) 
         {
 			this.solenoid = solenoid;
         }
@@ -23,7 +21,7 @@ public class ActuateSingleSolenoid extends Command {
 	protected void execute() {
 		
 		solenoid.set(true);
-		
+		System.out.println("solenoid excecute");
 	}
 	
 	@Override
@@ -37,7 +35,7 @@ public class ActuateSingleSolenoid extends Command {
 	protected void end() {
 
 		solenoid.set(false);
-		
+		System.out.println("solenoid end");
 	}
 	
 }

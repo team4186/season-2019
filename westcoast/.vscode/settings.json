@@ -1,5 +1,6 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
+  "java.home":"C:/Users/Public/frc2019/jdk",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
