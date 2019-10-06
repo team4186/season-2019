@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3); //Ramp ascend (hold)
   private final JoystickButton buttonB = new JoystickButton(joystick, 4); //Ramp descend (hold)
-  //private final JoystickButton buttonC = new JoystickButton(joystick, 5); //Deploy ramp (hold)
+  private final JoystickButton buttonC = new JoystickButton(joystick, 5); //Deploy ramp (hold)
   private final JoystickButton buttonE = new JoystickButton(joystick, 8); //Servo align (toggle)
   private final JoystickButton topTrigger = new JoystickButton(joystick, 1); //Tongue (toggle)
   private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6); //Hatch push (hold)
@@ -65,7 +65,6 @@ public class Robot extends TimedRobot {
 
   //Pneumatics
   private Compressor compressor = new Compressor(10);
-<<<<<<< Updated upstream
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
   private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
   //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
@@ -73,13 +72,9 @@ public class Robot extends TimedRobot {
   //private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(11, 5, 4);
   private Solenoid frontFoot = new Solenoid(12, 5);
   private Solenoid rearFeet = new Solenoid(12, 4);
-=======
-  private DoubleSolenoid actuator = new DoubleSolenoid(10, 0, 1);
-  private DoubleSolenoid delivery = new DoubleSolenoid(10, 3, 4);
->>>>>>> Stashed changes
 
   //Commands
-  TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
+  TeleopDrive teleopDrive = new TeleopDrive(drive, joystick, buttonC);
   //EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0); //encoders are switched
   //AlignHatch alignHatch = new AlignHatch(encoderArcade);
   //EncoderDistance encoderDistance = new EncoderDistance(rightDriveEncoder, leftDriveEncoder, leftMain, rightMain, 1.0);
@@ -138,12 +133,8 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-<<<<<<< Updated upstream
-    buttonE.toggleWhenPressed(new AlignHatchServo(servo));
-=======
-    buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(delivery, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
->>>>>>> Stashed changes
+    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
+    //buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(delivery, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
 
     CommandGroup combinedSolenoid = new CommandGroup();
     combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
@@ -164,13 +155,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-<<<<<<< Updated upstream
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
-=======
-    Result arcadeResult = arcadeMode.drive(joystick.getY(), joystick.getTwist());
->>>>>>> Stashed changes
 
     servo.set(0.5*(joystick.getRawAxis(4) + 1));
   }

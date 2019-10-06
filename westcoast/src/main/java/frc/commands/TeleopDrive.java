@@ -9,15 +9,17 @@ public class TeleopDrive extends Command {
 	
 	private final DifferentialDrive drive;
 	private final Joystick joystick;
-	private final JoystickButton buttonC;
-
+	private final JoystickButton button;
 	
 	public TeleopDrive(
         DifferentialDrive drive, 
-		Joystick joystick) {
+		Joystick joystick,
+		JoystickButton button
+		) {
 
 		this.drive = drive;
 		this.joystick = joystick;
+		this.button = button;
 	}
 	
 	@Override
@@ -28,7 +30,7 @@ public class TeleopDrive extends Command {
 	protected void execute() {	
 			drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getTwist()));
 			//drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getX()));
-			System.out.println("attenuate");
+			//System.out.println(attenuate());
 		
 	}
 	
@@ -46,7 +48,7 @@ public class TeleopDrive extends Command {
 		double v = value;
 		boolean raw = joystick.getRawButton(5);
 		if(raw == true){ 
-			return (0.35*v);
+			return (0.5*v);
 		}
 		else{
 			return (Math.signum(v) * Math.pow(Math.abs(v), 1.2));
