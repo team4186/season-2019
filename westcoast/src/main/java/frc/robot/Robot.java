@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
   //Pneumatics
   private Compressor compressor = new Compressor(10);
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
-  // private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
+  private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
   //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
   //private Solenoid rampSolenoid = new Solenoid(11, 0);
   //private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(11, 5, 4);
@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
   //EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0); //encoders are switched
   //AlignHatch alignHatch = new AlignHatch(encoderArcade);
   //EncoderDistance encoderDistance = new EncoderDistance(rightDriveEncoder, leftDriveEncoder, leftMain, rightMain, 1.0);
-  ActuateDoubleSolenoid deployPistons = new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
+  //ActuateDoubleSolenoid deployPistons = new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
   //ActuateSingleSolenoid rampPistons = new ActuateSingleSolenoid(rampSolenoid);
   // SetMotor winchDown = new SetMotor(winchMotor, -1.0);
   // SetMotor winchUp = new SetMotor(winchMotor, 1.0);
