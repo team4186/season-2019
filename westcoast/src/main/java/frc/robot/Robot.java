@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -66,7 +67,7 @@ public class Robot extends TimedRobot {
   //Pneumatics
   private Compressor compressor = new Compressor(10);
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
-  private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
+  // private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
   //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
   //private Solenoid rampSolenoid = new Solenoid(11, 0);
   //private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(11, 5, 4);
@@ -106,7 +107,7 @@ public class Robot extends TimedRobot {
 		//rightDriveEncoder.setDistancePerPulse(1);
     //leftDriveEncoder.setReverseDirection(true);
 
-    CameraServer.getInstance().startAutomaticCapture(0);
+    // CameraServer.getInstance().startAutomaticCapture(0);
   }
 
   @Override
@@ -147,7 +148,6 @@ public class Robot extends TimedRobot {
     buttonA.toggleWhenPressed(new ActuateSingleSolenoid(frontFoot));
     buttonB.toggleWhenPressed(new ActuateSingleSolenoid(rearFeet));
     
-
     teleopDrive.start();
   }
  
