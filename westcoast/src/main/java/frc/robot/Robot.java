@@ -43,14 +43,14 @@ public class Robot extends TimedRobot {
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3); //Ramp ascend (hold)
   private final JoystickButton buttonB = new JoystickButton(joystick, 4); //Ramp descend (hold)
-  private final JoystickButton buttonC = new JoystickButton(joystick, 5); //Deploy ramp (hold)
-  private final JoystickButton buttonE = new JoystickButton(joystick, 8); //Servo align (toggle)
+  //private final JoystickButton buttonC = new JoystickButton(joystick, 5); //Deploy ramp (hold)
+  //private final JoystickButton buttonE = new JoystickButton(joystick, 8); //Servo align (toggle)
   private final JoystickButton topTrigger = new JoystickButton(joystick, 1); //Tongue (toggle)
   private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6); //Hatch push (hold)
   private final JoystickButton fireButton = new JoystickButton(joystick, 2); //Tongue + hatch (toggle)
-  private final JoystickButton dpadUp  = new JoystickButton(joystick, 20); //Elevator up (hold)
-  private final JoystickButton dpadDown  = new JoystickButton(joystick, 21); //Elevator down (hold)
-  private final JoystickButton buttonD = new JoystickButton(joystick, 7); //Level two pistons (toggle)
+  //private final JoystickButton dpadUp  = new JoystickButton(joystick, 20); //Elevator up (hold)
+  //private final JoystickButton dpadDown  = new JoystickButton(joystick, 21); //Elevator down (hold)
+  //private final JoystickButton buttonD = new JoystickButton(joystick, 7); //Level two pistons (toggle)
 
   //Sensors
   //private final Encoder leftDriveEncoder = new Encoder(0, 1);
@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
   private Solenoid rearFeet = new Solenoid(12, 4);
 
   //Commands
-  TeleopDrive teleopDrive = new TeleopDrive(drive, joystick, buttonC);
+  TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
   //EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0); //encoders are switched
   //AlignHatch alignHatch = new AlignHatch(encoderArcade);
   //EncoderDistance encoderDistance = new EncoderDistance(rightDriveEncoder, leftDriveEncoder, leftMain, rightMain, 1.0);
