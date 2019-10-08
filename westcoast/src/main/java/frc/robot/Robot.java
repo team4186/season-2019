@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
     //fireButton.whileHeld(combinedSolenoid); //This makes it so when it ends it goes back to it's original position
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-    bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
 
     buttonA.toggleWhenPressed(new ActuateSingleSolenoid(frontFoot));
     buttonB.toggleWhenPressed(new ActuateSingleSolenoid(rearFeet));
