@@ -68,9 +68,6 @@ public class Robot extends TimedRobot {
   private Compressor compressor = new Compressor(10);
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
   private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
-  //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
-  //private Solenoid rampSolenoid = new Solenoid(11, 0);
-  //private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(11, 5, 4);
   private Solenoid frontFoot = new Solenoid(12, 5);
   private Solenoid rearFeet = new Solenoid(12, 4);
 
@@ -88,14 +85,6 @@ public class Robot extends TimedRobot {
   //Command ejectFlipperAuto = new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward);
   //Command ejectFlipperTeleop = new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward);
 
-
-  /*Command deployHatch() {
-    CommandGroup command = new CommandGroup();
-    command.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    command.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
-
-    return command;
-  }*/
 
   @Override
   public void robotInit() {
@@ -134,26 +123,7 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    //buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(delivery, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-
-    CommandGroup combinedSolenoid = new CommandGroup();
-    if(flipperSolenoid.get() == Value.kReverse & pusherSolenoid.get() == Value.kForward){
-      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
-    }
-    else if(flipperSolenoid.get() == Value.kForward & pusherSolenoid.get() == Value.kForward){
-      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse)); //this actuates exclusively the pushers if the flipper is already out
-    }
-    else if(flipperSolenoid.get() == Value.kReverse & pusherSolenoid.get() == Value.kReverse){
-      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward)); //this actuates exlusively the flipper if the pushers are out (this is situationally unlikely, but might as well)
-    }
-    else{
-      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kForward, Value.kForward));
-      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, Value.kReverse, Value.kReverse)); //does nothing just wanted to make sure there was an else so it didn't get angry when they were both out
-    }
-    fireButton.whenPressed(combinedSolenoid);
-    //fireButton.whileHeld(combinedSolenoid); //This makes it so when it ends it goes back to it's original position
+    fireButton.whileHeld(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kReverse, Value.kForward));
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
     bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
