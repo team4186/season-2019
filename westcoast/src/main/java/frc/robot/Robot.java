@@ -28,8 +28,8 @@ public class Robot extends TimedRobot {
   MotorFactory hybridFactory = new MotorFactoryHybrid();
 
   //Drive system
-  private final SpeedController leftMain = hybridFactory.create(5, 4, 6);
-  private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
+  private final SpeedController leftMain = hybridFactory.create(4, 5, 6);
+  private final SpeedController rightMain = hybridFactory.create(1, 2, 3);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
   //Subsystem Motors
@@ -138,9 +138,22 @@ public class Robot extends TimedRobot {
     //buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(delivery, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
 
     CommandGroup combinedSolenoid = new CommandGroup();
-    combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-    combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
-    fireButton.toggleWhenPressed(combinedSolenoid);
+    if(flipperSolenoid.get() == Value.kReverse & pusherSolenoid.get() == Value.kForward){
+      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
+      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
+    }
+    else if(flipperSolenoid.get() == Value.kForward & pusherSolenoid.get() == Value.kForward){
+      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse)); //this actuates exclusively the pushers if the flipper is already out
+    }
+    else if(flipperSolenoid.get() == Value.kReverse & pusherSolenoid.get() == Value.kReverse){
+      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward)); //this actuates exlusively the flipper if the pushers are out (this is situationally unlikely, but might as well)
+    }
+    else{
+      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kForward, Value.kForward));
+      combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, Value.kReverse, Value.kReverse)); //does nothing just wanted to make sure there was an else so it didn't get angry when they were both out
+    }
+    fireButton.whenPressed(combinedSolenoid);
+    //fireButton.whileHeld(combinedSolenoid); //This makes it so when it ends it goes back to it's original position
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
     bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
