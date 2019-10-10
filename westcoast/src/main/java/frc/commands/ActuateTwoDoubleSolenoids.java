@@ -9,23 +9,28 @@ public class ActuateTwoDoubleSolenoids extends Command {
   private final DoubleSolenoid solenoid2;
 	private final Value direction;
   private final Value endDirection;
-  public enum state {
-    bothout, flapperout, pusherout, bothin
+  private final Value direction2;
+  private final Value endDirection2;
+  public enum State {
+    BOTH_OUT, FLAPPER_OUT, PUSHER_OUT, BOTH_IN
   }
-  private state fire = state.bothout;
+  private State fire = State.BOTH_OUT;
   
   public ActuateTwoDoubleSolenoids(
     DoubleSolenoid solenoid,
     DoubleSolenoid solenoid2,
     Value direction,
-    Value endDirection
+    Value endDirection,
+    Value direction2,
+    Value endDirection2
     ) 
     {
       this.direction = direction;
       this.endDirection = endDirection;
+      this.direction2 = direction2;
+      this.endDirection2 = endDirection2;
       this.solenoid = solenoid;
       this.solenoid2 = solenoid2;
-      
   }
 
   @Override
@@ -35,24 +40,23 @@ public class ActuateTwoDoubleSolenoids extends Command {
   @Override
   protected void execute() {
     if(solenoid.get() == direction){
-      if(solenoid2.get() == endDirection){
-        fire = state.bothout;
+      if(solenoid2.get() == direction2){
+        fire = State.BOTH_OUT;
       }
-      if(solenoid2.get() == direction){
-        solenoid2.set(endDirection);
-        fire = state.flapperout;
+      if(solenoid2.get() == endDirection2){
+        fire = State.FLAPPER_OUT;
       }
     }
     else if (solenoid.get() == endDirection){
-      solenoid.set(direction);
-      if(solenoid2.get() == endDirection){
-        fire = state.pusherout;
+      if(solenoid2.get() == direction2){
+        fire = State.PUSHER_OUT;
       }
-      if(solenoid2.get() == direction){
-        solenoid2.set(endDirection);
-        fire = state.bothin;
+      if(solenoid2.get() == endDirection2){
+        fire = State.BOTH_IN;
       }
     }
+    solenoid.set(direction);
+    solenoid2.set(direction2);
   }
 
   @Override
@@ -62,15 +66,17 @@ public class ActuateTwoDoubleSolenoids extends Command {
 
   @Override
   protected void end() {
-    if(fire.equals(state.flapperout)){
-      solenoid2.set(direction);
+    if(fire.equals(State.FLAPPER_OUT)){
+      solenoid.set(direction);
+      solenoid2.set(endDirection2);
     }
-    else if(fire.equals(state.pusherout)){
+    else if(fire.equals(State.PUSHER_OUT)){
         solenoid.set(endDirection);
+        solenoid2.set(direction2);
     }
-    else if(fire.equals(state.bothin)){
+    else if(fire.equals(State.BOTH_IN)){
         solenoid.set(endDirection);
-        solenoid2.set(direction);
+        solenoid2.set(endDirection2);
     }
   }
 

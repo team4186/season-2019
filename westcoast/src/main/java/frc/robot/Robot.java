@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.motorFactory.*;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
 import edu.wpi.first.cameraserver.*;
@@ -123,7 +122,7 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-    fireButton.whileHeld(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kReverse, Value.kForward));
+    fireButton.whileHeld(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kReverse, Value.kForward, Value.kForward, Value.kReverse));
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
     bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
