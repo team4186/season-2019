@@ -13,9 +13,9 @@ public class MotorFactoryHybrid implements MotorFactory {
         motor1.follow(motorMain);
         motor2.follow(motorMain);
 
-        motorMain.configPeakCurrentLimit(22);
-        motorMain.configContinuousCurrentLimit(20);
-        motorMain.configPeakCurrentDuration(50);
+        motorMain.configPeakCurrentLimit(20);
+        motorMain.configContinuousCurrentLimit(18);
+        motorMain.configPeakCurrentDuration(45);
         motorMain.enableCurrentLimit(true);     
 
         return motorMain;

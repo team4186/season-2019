@@ -28,8 +28,9 @@ public class TeleopDrive extends Command {
 	
 	@Override
 	protected void execute() {	
-			drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getTwist()));
-			//drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getX()));
+			//drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getTwist()));
+			drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getX()));
+			//drive.arcadeDrive( attenuate(-joystick.getZ()),attenuate(-joystick.getX()));
 			//System.out.println(attenuate());
 		
 	}

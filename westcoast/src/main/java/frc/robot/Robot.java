@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-    fireButton.whileHeld(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kReverse, Value.kForward, Value.kForward, Value.kReverse));
+    fireButton.whenPressed(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kForward, Value.kReverse, Value.kReverse, Value.kForward));
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
     bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
