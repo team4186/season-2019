@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.motorFactory.*;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
 import edu.wpi.first.cameraserver.*;
@@ -68,9 +67,6 @@ public class Robot extends TimedRobot {
   private Compressor compressor = new Compressor(10);
   private DoubleSolenoid flipperSolenoid = new DoubleSolenoid(10, 0, 1);
   private DoubleSolenoid pusherSolenoid = new DoubleSolenoid(10, 2, 3);
-  //private DoubleSolenoid wedgeSolenoid = new DoubleSolenoid(10, 4, 5);
-  //private Solenoid rampSolenoid = new Solenoid(11, 0);
-  //private DoubleSolenoid levelTwoSolenoid = new DoubleSolenoid(11, 5, 4);
   private Solenoid frontFoot = new Solenoid(12, 5);
   private Solenoid rearFeet = new Solenoid(12, 4);
 
@@ -88,14 +84,6 @@ public class Robot extends TimedRobot {
   //Command ejectFlipperAuto = new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward);
   //Command ejectFlipperTeleop = new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward);
 
-
-  /*Command deployHatch() {
-    CommandGroup command = new CommandGroup();
-    command.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    command.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
-
-    return command;
-  }*/
 
   @Override
   public void robotInit() {
@@ -134,16 +122,10 @@ public class Robot extends TimedRobot {
 
     compressor.setClosedLoopControl(true);
 
-    //buttonA.toggleWhenPressed(new ActuateDoubleSolenoid(actuator, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-    //buttonB.toggleWhenPressed(new ActuateDoubleSolenoid(delivery, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward));
-
-    CommandGroup combinedSolenoid = new CommandGroup();
-    combinedSolenoid.addParallel(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-    combinedSolenoid.addParallel(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
-    fireButton.toggleWhenPressed(combinedSolenoid);
+    fireButton.whenPressed(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kForward, Value.kReverse, Value.kReverse, Value.kForward));
 
     topTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward));
-    bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse));
+    bottomTrigger.toggleWhenPressed(new ActuateDoubleSolenoid(pusherSolenoid, Value.kForward, Value.kReverse));
 
     buttonA.toggleWhenPressed(new ActuateSingleSolenoid(frontFoot));
     buttonB.toggleWhenPressed(new ActuateSingleSolenoid(rearFeet));
