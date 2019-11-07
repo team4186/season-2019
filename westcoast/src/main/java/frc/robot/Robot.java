@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SPI;
 import frc.motorFactory.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -34,6 +35,8 @@ public class Robot extends TimedRobot {
 
   //Sensors
   private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
+  private final Encoder leftEncoder = new Encoder(0, 1);
+  private final Encoder rightEncoder = new Encoder(2, 3);
 
   //Pneumatics
   private Compressor compressor = new Compressor(10);
@@ -43,7 +46,7 @@ public class Robot extends TimedRobot {
   private Solenoid rearFeet = new Solenoid(12, 4);
 
   //Commands
-  PIDDrive teleopDrive = new PIDDrive(drive, joystick, ahrs);
+  PIDDrive teleopDrive = new PIDDrive(drive, joystick, leftEncoder, rightEncoder);
   //TeleopDrive teleopDrive = new TeleopDrive(drive,joystick);
   
   @Override

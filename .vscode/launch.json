@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<SolenoidTest>",
+            "request": "launch",
+            "mainClass": "frc.robot.Main",
+            "projectName": "SolenoidTest"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<mecanum-test>",
+            "request": "launch",
+            "mainClass": "frc.robot.Main",
+            "projectName": "mecanum-test"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<vision-test>",
+            "request": "launch",
+            "mainClass": "frc.robot.Main",
+            "projectName": "vision-test"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<westcoast>",
+            "request": "launch",
+            "mainClass": "frc.robot.Main",
+            "projectName": "westcoast"
+        }
+    ]
+}
