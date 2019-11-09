@@ -43,8 +43,8 @@ public class Robot extends TimedRobot {
   private Solenoid rearFeet = new Solenoid(12, 4);
 
   //Commands
-  PIDDrive teleopDrive = new PIDDrive(drive, joystick, leftEncoder, rightEncoder);
-  //TeleopDrive teleopDrive = new TeleopDrive(drive,joystick);
+  //PIDDrive teleopDrive = new PIDDrive(drive, joystick, leftEncoder, rightEncoder);
+  TeleopDrive teleopDrive = new TeleopDrive(drive,joystick);
   
   @Override
   public void robotInit() {
@@ -68,6 +68,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("leftEncoder", leftEncoder.getRate());
+    SmartDashboard.putNumber("rightEncoder", rightEncoder.getRate());
     
     teleopPeriodic();
   }
@@ -96,6 +98,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("leftEncoder", leftEncoder.getRate());
+    SmartDashboard.putNumber("rightEncoder", rightEncoder.getRate());
   }
 
   @Override
