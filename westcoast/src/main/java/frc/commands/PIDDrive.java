@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class PIDDrive extends Command {
 
@@ -68,25 +70,23 @@ public class PIDDrive extends Command {
       (out) -> {right = out;});
     }
 
-  // Called just before this Command runs the first time
   @Override
   protected void initialize() {
     leftEncoder.reset();
     pidLeft.setContinuous(false);
     pidLeft.setAbsoluteTolerance(50);
-    pidLeft.setInputRange(-15000, 15000);
+    pidLeft.setInputRange(-15000, 15000); //esoteric number, we will measure our actual input range using SmartDash
     pidLeft.setOutputRange(-1, 1);
     pidLeft.enable();
 
     rightEncoder.reset();
     pidRight.setContinuous(false);
     pidRight.setAbsoluteTolerance(50);
-    pidRight.setInputRange(-15000, 15000);
+    pidRight.setInputRange(-15000, 15000); //esoteric number, we will measure our actual input range using SmartDash
     pidRight.setOutputRange(-1, 1);
     pidRight.enable();
   }
 
-  // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
     double leftSetpoint;
@@ -95,7 +95,7 @@ public class PIDDrive extends Command {
     double zRotation = joystick.getTwist();
     double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
     if (xSpeed >= 0.0) {
-      // First quadrant, else second quadrant
+      // joystick is pushed forward
       if (zRotation >= 0.0) {
         leftSetpoint = maxInput;
         rightSetpoint = xSpeed - zRotation;
@@ -104,7 +104,7 @@ public class PIDDrive extends Command {
         rightSetpoint = maxInput;
       }
     } else {
-      // Third quadrant, else fourth quadrant
+      // joystick is pulled back
       if (zRotation >= 0.0) {
         leftSetpoint = xSpeed + zRotation;
         rightSetpoint = maxInput;
@@ -114,27 +114,28 @@ public class PIDDrive extends Command {
       }
     }
 
-    pidLeft.setSetpoint(leftSetpoint*15000);
-    pidRight.setSetpoint(rightSetpoint*15000);
+    pidLeft.setSetpoint(leftSetpoint*15000);  //esoteric number, same as max input
+    pidRight.setSetpoint(rightSetpoint*15000); //esoteric number, should max out as same as max input
 
     drive.tankDrive(left, right, false);
+    
+    SmartDashboard.putNumber("leftEncoder value", leftEncoder.getRate());
+    SmartDashboard.putNumber("rightEncoder value", rightEncoder.getRate());
+    SmartDashboard.putNumber("pidLeft Error", pidLeft.getError());
+    SmartDashboard.putNumber("pidRight Error", pidRight.getError());
   }
 
-  // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
     return false;
   }
 
-  // Called once after isFinished returns true
   @Override
   protected void end() {
     drive.stopMotor();
     pidLeft.disable();
   }
 
-  // Called when another command which requires one or more of the same
-  // subsystems is scheduled to run
   @Override
   protected void interrupted() {
     end();

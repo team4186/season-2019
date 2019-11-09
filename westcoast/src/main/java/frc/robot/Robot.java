@@ -11,11 +11,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SPI;
 import frc.motorFactory.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
-import com.kauailabs.navx.frc.AHRS;
 
 public class Robot extends TimedRobot {
 
@@ -34,7 +32,6 @@ public class Robot extends TimedRobot {
   private final JoystickButton fireButton = new JoystickButton(joystick, 2); //Tongue + hatch (toggle)
 
   //Sensors
-  private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
   private final Encoder leftEncoder = new Encoder(0, 1);
   private final Encoder rightEncoder = new Encoder(2, 3);
 

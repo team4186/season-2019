@@ -20,11 +20,4 @@ public class MotorFactoryHybrid implements MotorFactory {
 
         return motorMain;
     }    
-
-    /*public void currentLimitTalon(WPI_TalonSRX talon){
-        talon.configPeakCurrentLimit(22);
-        talon.configContinuousCurrentLimit(20);
-        talon.configPeakCurrentDuration(50);
-        talon.enableCurrentLimit(true);
-    }*/
 }
