@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.SpeedController;
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Compressor;
@@ -10,12 +11,10 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SPI;
 import frc.motorFactory.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
-import com.kauailabs.navx.frc.AHRS;
 
 public class Robot extends TimedRobot {
 
@@ -25,6 +24,7 @@ public class Robot extends TimedRobot {
   private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
+
   //Input
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3); //Ramp ascend (hold)
@@ -33,10 +33,8 @@ public class Robot extends TimedRobot {
   private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6); //Hatch push (hold)
   private final JoystickButton fireButton = new JoystickButton(joystick, 2); //Tongue + hatch (toggle)
 
-  //Sensors
-  private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
-  private final Encoder leftEncoder = new Encoder(0, 1);
-  private final Encoder rightEncoder = new Encoder(2, 3);
+  //Auxiliary Objects
+  public DirectionRef absAngle = new DirectionRef();
 
   //Pneumatics
   private Compressor compressor = new Compressor(10);
@@ -45,10 +43,13 @@ public class Robot extends TimedRobot {
   private Solenoid frontFoot = new Solenoid(12, 5);
   private Solenoid rearFeet = new Solenoid(12, 4);
 
+  // Sensor
+  private AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
   //Commands
-  PIDDrive teleopDrive = new PIDDrive(drive, joystick, leftEncoder, rightEncoder);
-  //TeleopDrive teleopDrive = new TeleopDrive(drive,joystick);
-  
+  private PideopDrive teleopDrive = new PideopDrive(ahrs, joystick, drive);
+  //private TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
+
   @Override
   public void robotInit() {
     joystick.setTwistChannel(5);
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("AHRS Value", ahrs.getRate());
     
     teleopPeriodic();
   }
@@ -99,6 +101,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("AHRS Value", ahrs.getRate());
   }
 
   @Override
