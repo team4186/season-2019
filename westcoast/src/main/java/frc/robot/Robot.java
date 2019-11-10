@@ -1,11 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.SpeedController;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -13,52 +11,26 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SPI;
 import frc.motorFactory.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
-import edu.wpi.first.cameraserver.*;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Servo;
 
 public class Robot extends TimedRobot {
-  MotorFactory hybridFactory = new MotorFactoryHybrid();
 
   //Drive system
+  MotorFactory hybridFactory = new MotorFactoryHybrid();
   private final SpeedController leftMain = hybridFactory.create(5, 4, 6);
   private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
-
-  //Subsystem Motors
-  //private final WPI_VictorSPX winchMotor = new WPI_VictorSPX(7);
-  //private final WPI_TalonSRX elevatorMotor = new WPI_TalonSRX(8);
-  //private final WPI_TalonSRX gantryMotor = new WPI_TalonSRX(9);
-
-  //Servos
-  private final Servo servo = new Servo(0);
 
   //Input
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3); //Ramp ascend (hold)
   private final JoystickButton buttonB = new JoystickButton(joystick, 4); //Ramp descend (hold)
-  //private final JoystickButton buttonC = new JoystickButton(joystick, 5); //Deploy ramp (hold)
-  //private final JoystickButton buttonE = new JoystickButton(joystick, 8); //Servo align (toggle)
   private final JoystickButton topTrigger = new JoystickButton(joystick, 1); //Tongue (toggle)
   private final JoystickButton bottomTrigger = new JoystickButton(joystick, 6); //Hatch push (hold)
   private final JoystickButton fireButton = new JoystickButton(joystick, 2); //Tongue + hatch (toggle)
-  //private final JoystickButton dpadUp  = new JoystickButton(joystick, 20); //Elevator up (hold)
-  //private final JoystickButton dpadDown  = new JoystickButton(joystick, 21); //Elevator down (hold)
-  //private final JoystickButton buttonD = new JoystickButton(joystick, 7); //Level two pistons (toggle)
-
-  //Sensors
-  //private final Encoder leftDriveEncoder = new Encoder(0, 1);
-  //private final Encoder rightDriveEncoder = new Encoder(2, 3);
-  //private final DigitalInput elevatorTop = new DigitalInput(4);
-  //private final DigitalInput elevatorBottom = new DigitalInput(5);
-  //private final DigitalInput gantryLeft = new DigitalInput(6);
-  //private final DigitalInput gantryRight = new DigitalInput(7);
 
   //Auxiliary Objects
   public DirectionRef absAngle = new DirectionRef();
@@ -70,32 +42,19 @@ public class Robot extends TimedRobot {
   private Solenoid frontFoot = new Solenoid(12, 5);
   private Solenoid rearFeet = new Solenoid(12, 4);
 
-  //Commands
-  TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
-  //EncoderArcade encoderArcade = new EncoderArcade(leftMain, rightMain, rightDriveEncoder, leftDriveEncoder, 0.0001, 0.0, 0.0); //encoders are switched
-  //AlignHatch alignHatch = new AlignHatch(encoderArcade);
-  //EncoderDistance encoderDistance = new EncoderDistance(rightDriveEncoder, leftDriveEncoder, leftMain, rightMain, 1.0);
-  //ActuateDoubleSolenoid deployPistons = new ActuateDoubleSolenoid(pusherSolenoid, DoubleSolenoid.Value.kForward, DoubleSolenoid.Value.kReverse);
-  //ActuateSingleSolenoid rampPistons = new ActuateSingleSolenoid(rampSolenoid);
-  // SetMotor winchDown = new SetMotor(winchMotor, -1.0);
-  // SetMotor winchUp = new SetMotor(winchMotor, 1.0);
-  //Command flipperCommandAuto = new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward);
-  //Command flipperCommandTeleop = new ActuateDoubleSolenoid(flipperSolenoid, Value.kReverse, Value.kForward);
-  //Command ejectFlipperAuto = new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward);
-  //Command ejectFlipperTeleop = new ActuateDoubleSolenoid(flipperSolenoid, DoubleSolenoid.Value.kReverse, DoubleSolenoid.Value.kForward);
+  // Sensor
+  private AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
+  //Commands
+  private PIDDriveAHRS teleopDrive = new PIDDriveAHRS(ahrs, joystick, drive);
+  //private TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
 
   @Override
   public void robotInit() {
     joystick.setTwistChannel(5);
-
+   
     drive.setSafetyEnabled(false);
 
-    //leftDriveEncoder.setDistancePerPulse(1);
-		//rightDriveEncoder.setDistancePerPulse(1);
-    //leftDriveEncoder.setReverseDirection(true);
-
-    // CameraServer.getInstance().startAutomaticCapture(0);
   }
 
   @Override
@@ -112,6 +71,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("AHRS Value", ahrs.getRate());
     
     teleopPeriodic();
   }
@@ -140,8 +100,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
-
-    servo.set(0.5*(joystick.getRawAxis(4) + 1));
+    SmartDashboard.putNumber("AHRS Value", ahrs.getRate());
   }
 
   @Override
@@ -151,11 +110,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    compressor.setClosedLoopControl(false);
+    
   }
 
   @Override
   public void testPeriodic() {
-    servo.set(0.5*(joystick.getRawAxis(4) + 1));
+
   }
 }

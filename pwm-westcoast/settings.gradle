@@ -9,7 +9,7 @@ pluginManagement {
         if (OperatingSystem.current().isWindows()) {
             String publicFolder = System.getenv('PUBLIC')
             if (publicFolder == null) {
-                publicFolder = "C:\\Users\\aztechs"
+                publicFolder = "C:\\Users\\Public"
             }
             frcHome = new File(publicFolder, "frc${frcYear}")
         } else {
