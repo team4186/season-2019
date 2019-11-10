@@ -24,7 +24,6 @@ public class Robot extends TimedRobot {
   private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
-
   //Input
   private final Joystick joystick = new Joystick(0);
   private final JoystickButton buttonA = new JoystickButton(joystick, 3); //Ramp ascend (hold)
@@ -47,7 +46,7 @@ public class Robot extends TimedRobot {
   private AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
   //Commands
-  private PideopDrive teleopDrive = new PideopDrive(ahrs, joystick, drive);
+  private PIDDriveAHRS teleopDrive = new PIDDriveAHRS(ahrs, joystick, drive);
   //private TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
 
   @Override

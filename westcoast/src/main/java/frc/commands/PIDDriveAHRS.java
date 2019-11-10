@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 
-public class PideopDrive extends Command {
+public class PIDDriveAHRS extends Command {
 
   private final Joystick joystick;
   private final PIDController pid;
 
-  public PideopDrive(
+  public PIDDriveAHRS(
       AHRS ahrs,
       Joystick joystick,
       DifferentialDrive drive
