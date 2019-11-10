@@ -1,9 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.SpeedController;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Compressor;
@@ -14,12 +12,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SPI;
 import frc.motorFactory.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.commands.*;
-import com.kauailabs.navx.frc.AHRS;
 
 public class Robot extends TimedRobot {
 
@@ -29,8 +24,6 @@ public class Robot extends TimedRobot {
   private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
-  //Servos
-  private final Servo servo = new Servo(0);
 
   //Input
   private final Joystick joystick = new Joystick(0);
@@ -55,6 +48,7 @@ public class Robot extends TimedRobot {
 
   //Commands
   private PideopDrive teleopDrive = new PideopDrive(ahrs, joystick, drive);
+  //private TeleopDrive teleopDrive = new TeleopDrive(drive, joystick);
 
   @Override
   public void robotInit() {
@@ -78,6 +72,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("AHRS Value", ahrs.getRate());
     
     teleopPeriodic();
   }
@@ -106,6 +101,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
+    SmartDashboard.putNumber("AHRS Value", ahrs.getRate());
   }
 
   @Override

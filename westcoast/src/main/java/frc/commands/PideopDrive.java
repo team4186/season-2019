@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 
@@ -28,15 +27,15 @@ public class PideopDrive extends Command {
       DifferentialDrive drive
   ) {
     this.joystick=joystick;
-    this.pid=new PIDController(0.5, 0.0, 0.8, ahrs, (turnFactor) -> {
+    this.pid=new PIDController(0.2, 0.3, 0.5, ahrs, (turnFactor) -> {
       //System.out.println(turnFactor);
       
       drive.arcadeDrive(-joystick.getY(), -turnFactor);
     });
     ahrs.setPIDSourceType(PIDSourceType.kRate);
-    pid.setAbsoluteTolerance(4.0);
+    pid.setAbsoluteTolerance(0.5);
     pid.setContinuous(false);
-    pid.setInputRange(-180.0, 180.0);
+    pid.setInputRange(-6, 6);
     pid.setOutputRange(-.6, .6);
   }
 
@@ -47,7 +46,7 @@ public class PideopDrive extends Command {
 
   @Override
   protected void execute() {
-    pid.setSetpoint(joystick.getTwist() * 15.0);
+    pid.setSetpoint(joystick.getTwist() * 6);
     //System.out.println(pid.getError());
   }
 
