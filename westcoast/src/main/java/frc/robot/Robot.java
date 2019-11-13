@@ -20,8 +20,8 @@ public class Robot extends TimedRobot {
 
   //Drive system
   MotorFactory hybridFactory = new MotorFactoryHybrid();
-  private final SpeedController leftMain = hybridFactory.create(5, 4, 6);
-  private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
+  private final SpeedController leftMain = hybridFactory.create(2, 1, 3);
+  private final SpeedController rightMain = hybridFactory.create(5, 4, 6);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
   //Input

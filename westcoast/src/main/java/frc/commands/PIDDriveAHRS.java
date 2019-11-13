@@ -14,12 +14,16 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class PIDDriveAHRS extends Command {
 
   private final Joystick joystick;
   private final PIDController pid;
+  double p = 0.2;
+  double i = 0.3;
+  double d = 0.5;
 
   public PIDDriveAHRS(
       AHRS ahrs,
@@ -27,16 +31,14 @@ public class PIDDriveAHRS extends Command {
       DifferentialDrive drive
   ) {
     this.joystick=joystick;
-    this.pid=new PIDController(0.2, 0.3, 0.5, ahrs, (turnFactor) -> {
-      //System.out.println(turnFactor);
-      
-      drive.arcadeDrive(-joystick.getY(), -turnFactor);
+    this.pid=new PIDController(p, i, d, ahrs, (turnFactor) -> {      
+      drive.arcadeDrive(joystick.getY(), turnFactor);
     });
     ahrs.setPIDSourceType(PIDSourceType.kRate);
     pid.setAbsoluteTolerance(0.5);
     pid.setContinuous(false);
     pid.setInputRange(-6, 6);
-    pid.setOutputRange(-.6, .6);
+    pid.setOutputRange(-1, 1);
   }
 
   @Override
@@ -47,7 +49,12 @@ public class PIDDriveAHRS extends Command {
   @Override
   protected void execute() {
     pid.setSetpoint(joystick.getTwist() * 6);
-    //System.out.println(pid.getError());
+
+    p = SmartDashboard.getNumber("P", p);
+    i = SmartDashboard.getNumber("I", i);
+    d = SmartDashboard.getNumber("D", d);
+
+    pid.setPID(p,i,d);
   }
 
   @Override
@@ -62,6 +69,4 @@ public class PIDDriveAHRS extends Command {
   @Override
   protected void interrupted() {
   }
-
-
 }
