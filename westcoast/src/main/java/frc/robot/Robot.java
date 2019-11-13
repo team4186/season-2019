@@ -68,8 +68,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
-    SmartDashboard.putNumber("leftEncoder", leftEncoder.getRate());
-    SmartDashboard.putNumber("rightEncoder", rightEncoder.getRate());
+    SmartDashboard.putNumber("leftEncoder value", leftEncoder.getRate());
+    SmartDashboard.putNumber("rightEncoder value", rightEncoder.getRate());
     
     teleopPeriodic();
   }
@@ -98,8 +98,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Flipper Deployed", flipperSolenoid.get() == Value.kForward ? true : false);
     SmartDashboard.putBoolean("Front Piston Deployed", frontFoot.get());
     SmartDashboard.putBoolean("Rear Piston Deployed", rearFeet.get());
-    SmartDashboard.putNumber("leftEncoder", leftEncoder.getRate());
-    SmartDashboard.putNumber("rightEncoder", rightEncoder.getRate());
+    SmartDashboard.putNumber("leftEncoder value", leftEncoder.getRate());
+    SmartDashboard.putNumber("rightEncoder value", rightEncoder.getRate());
   }
 
   @Override

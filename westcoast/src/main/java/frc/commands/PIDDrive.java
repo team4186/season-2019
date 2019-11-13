@@ -22,9 +22,9 @@ public class PIDDrive extends Command {
   private PIDController pidRight;
   double left = 0;
   double right = 0;
-  double P = 0.5;
-  double I = 0;
-  double D = 0.6;
+  double p = 0.5;
+  double i = 0;
+  double d = 0.6;
 
   public PIDDrive(
     DifferentialDrive drive,
@@ -37,7 +37,7 @@ public class PIDDrive extends Command {
       this.leftEncoder=leftEncoder;
       this.rightEncoder=rightEncoder;
 
-      pidLeft = new PIDController(P, I, D, 
+      pidLeft = new PIDController(p, i, d, 
       new PIDSource(){
         @Override
         public void setPIDSourceType(PIDSourceType pidSource) {
@@ -53,7 +53,7 @@ public class PIDDrive extends Command {
       }, 
       (out) -> {left = out;});
       
-      pidRight = new PIDController(P, I, D, 
+      pidRight = new PIDController(p, i, d, 
       new PIDSource(){
         @Override
         public void setPIDSourceType(PIDSourceType pidSource) {
@@ -114,13 +114,19 @@ public class PIDDrive extends Command {
       }
     }
 
+    p = SmartDashboard.getNumber("p", p);
+    i = SmartDashboard.getNumber("i", i);
+    d = SmartDashboard.getNumber("d", d);
+    
+    pidLeft.setPID(p, i, d);
+    pidLeft.setPID(p, i, d);
+
+
     pidLeft.setSetpoint(leftSetpoint*15000);  //esoteric number, same as max input
     pidRight.setSetpoint(rightSetpoint*15000); //esoteric number, should max out as same as max input
 
     drive.tankDrive(left, right, false);
     
-    SmartDashboard.putNumber("leftEncoder value", leftEncoder.getRate());
-    SmartDashboard.putNumber("rightEncoder value", rightEncoder.getRate());
     SmartDashboard.putNumber("pidLeft Error", pidLeft.getError());
     SmartDashboard.putNumber("pidRight Error", pidRight.getError());
   }
