@@ -53,7 +53,12 @@ public class PIDDriveADIS extends Command {
       wait = wait + 1;
       if (wait == 5){
         pid.reset();
-        wait = -50;
+        wait = -20;
+      }
+    }
+    else{
+      if(wait >= 0){
+        wait = 0;
       }
     }
     if(wait <= 0){
