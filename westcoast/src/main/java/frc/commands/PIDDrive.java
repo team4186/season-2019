@@ -22,9 +22,9 @@ public class PIDDrive extends Command {
   private PIDController pidRight;
   double left = 0;
   double right = 0;
-  double p = 0.5;
+  double p = 0.1;
   double i = 0;
-  double d = 0.6;
+  double d = 0;
 
   public PIDDrive(
     DifferentialDrive drive,
@@ -37,36 +37,14 @@ public class PIDDrive extends Command {
       this.leftEncoder=leftEncoder;
       this.rightEncoder=rightEncoder;
 
+      leftEncoder.setPIDSourceType(PIDSourceType.kRate);
       pidLeft = new PIDController(p, i, d, 
-      new PIDSource(){
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-        }
-        @Override
-        public double pidGet() {
-          return leftEncoder.getRate();
-        }
-        @Override
-        public PIDSourceType getPIDSourceType() {
-          return PIDSourceType.kRate;
-        }
-      }, 
+      leftEncoder, 
       (out) -> {left = out;});
       
+      rightEncoder.setPIDSourceType(PIDSourceType.kRate);
       pidRight = new PIDController(p, i, d, 
-      new PIDSource(){
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-        }
-        @Override
-        public double pidGet() {
-          return rightEncoder.getRate();
-        }
-        @Override
-        public PIDSourceType getPIDSourceType() {
-          return PIDSourceType.kRate;
-        }
-      }, 
+      rightEncoder, 
       (out) -> {right = out;});
     }
 
@@ -75,14 +53,14 @@ public class PIDDrive extends Command {
     leftEncoder.reset();
     pidLeft.setContinuous(false);
     pidLeft.setAbsoluteTolerance(50);
-    pidLeft.setInputRange(-15000, 15000); //esoteric number, we will measure our actual input range using SmartDash
+    pidLeft.setInputRange(-100, 100); //esoteric number, we will measure our actual input range using SmartDash
     pidLeft.setOutputRange(-1, 1);
     pidLeft.enable();
 
-    rightEncoder.reset();
+    rightEncoder.reset();  
     pidRight.setContinuous(false);
     pidRight.setAbsoluteTolerance(50);
-    pidRight.setInputRange(-15000, 15000); //esoteric number, we will measure our actual input range using SmartDash
+    pidRight.setInputRange(-100, 100); //esoteric number, we will measure our actual input range using SmartDash
     pidRight.setOutputRange(-1, 1);
     pidRight.enable();
   }
@@ -114,21 +92,15 @@ public class PIDDrive extends Command {
       }
     }
 
-    p = SmartDashboard.getNumber("p", p);
-    i = SmartDashboard.getNumber("i", i);
-    d = SmartDashboard.getNumber("d", d);
-    
-    pidLeft.setPID(p, i, d);
-    pidLeft.setPID(p, i, d);
-
-
-    pidLeft.setSetpoint(leftSetpoint*15000);  //esoteric number, same as max input
-    pidRight.setSetpoint(rightSetpoint*15000); //esoteric number, should max out as same as max input
+    pidLeft.setSetpoint(leftSetpoint*100);  //esoteric number, same as max input
+    pidRight.setSetpoint(rightSetpoint*100); //esoteric number, should max out as same as max input
 
     drive.tankDrive(left, right, false);
     
     SmartDashboard.putNumber("pidLeft Error", pidLeft.getError());
     SmartDashboard.putNumber("pidRight Error", pidRight.getError());
+    SmartDashboard.putNumber("pidLeft Setpoint", pidLeft.getSetpoint());
+    SmartDashboard.putNumber("pidRight Setpoint", pidRight.getSetpoint());
   }
 
   @Override
@@ -139,6 +111,9 @@ public class PIDDrive extends Command {
   @Override
   protected void end() {
     drive.stopMotor();
+    pidRight.reset();
+    pidLeft.reset();
+    pidRight.disable();
     pidLeft.disable();
   }
 

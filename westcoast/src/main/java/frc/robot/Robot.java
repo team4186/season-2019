@@ -19,8 +19,8 @@ public class Robot extends TimedRobot {
 
   //Drive system
   MotorFactory hybridFactory = new MotorFactoryHybrid();
-  private final SpeedController leftMain = hybridFactory.create(5, 4, 6);
-  private final SpeedController rightMain = hybridFactory.create(2, 1, 3);
+  private final SpeedController leftMain = hybridFactory.create(2, 1, 3);
+  private final SpeedController rightMain = hybridFactory.create(5, 4, 6);
   private final DifferentialDrive drive = new DifferentialDrive(leftMain, rightMain);
 
   //Input
@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
 
   //Sensors
   private final Encoder leftEncoder = new Encoder(0, 1);
-  private final Encoder rightEncoder = new Encoder(2, 3);
+  private final Encoder rightEncoder = new Encoder(3,2);
 
   //Pneumatics
   private Compressor compressor = new Compressor(10);
@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     joystick.setTwistChannel(5);
-   
+  
     drive.setSafetyEnabled(false);
 
   }
