@@ -5,8 +5,10 @@ import com.analog.adis16448.frc.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import frc.commands.PIDDriveADIS;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.commands.*;
 
 public class Robot extends TimedRobot {
 
@@ -22,7 +24,7 @@ public class Robot extends TimedRobot {
   private DifferentialDrive drive = new DifferentialDrive(leftTalons, rightTalons);
 
   //Commands
-  PIDDriveADIS PIDdrive = new PIDDriveADIS(drive, joystick, adis);
+  private PIDDriveADIS PIDdrive = new PIDDriveADIS(adis, joystick, drive);
 
   //Extra Actuators
   private final Talon actuator1 = new Talon(2);
@@ -57,7 +59,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drive.arcadeDrive(joystick.getZ(), joystick.getTwist());
+    Scheduler.getInstance().run();
+    //drive.arcadeDrive(joystick.getY(), joystick.getX());
+    SmartDashboard.putNumber("aaaaa", adis.getRateZ());
+    SmartDashboard.putNumber("aaaa3", joystick.getY());
   }
 
   @Override
