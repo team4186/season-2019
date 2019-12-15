@@ -13,30 +13,34 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class PIDDriveAHRS extends Command {
 
   private final Joystick joystick;
   private final PIDController pid;
+  private final AHRS ahrs;
+  private final DifferentialDrive drive;
   double p = 0.07;
   double i = 0.025;
-  double d = 0.2;
+  double d = 0.15;
+  double output;
 
   public PIDDriveAHRS(
       AHRS ahrs,
       Joystick joystick,
       DifferentialDrive drive
   ) {
+    this.drive = drive;
     this.joystick=joystick;
-    this.pid=new PIDController(p, i, d, ahrs, (turnFactor) -> {      
-      drive.arcadeDrive(joystick.getY(), -attenuate(turnFactor), false);
-    });
+    this.ahrs = ahrs;
+    this.pid=new PIDController(p, i, d, ahrs, (turnFactor) -> output = turnFactor, 0.1);
     ahrs.setPIDSourceType(PIDSourceType.kRate);
-    pid.setAbsoluteTolerance(0.4);
+    pid.setAbsoluteTolerance(1);
     pid.setContinuous(false);
-    pid.setInputRange(-6, 6);
-    pid.setOutputRange(-1, 1);
+    pid.setInputRange(-4, 4);
+    pid.setOutputRange(-0.6, 0.6);
   }
 
   @Override
@@ -46,7 +50,20 @@ public class PIDDriveAHRS extends Command {
 
   @Override
   protected void execute() {
-    pid.setSetpoint(attenuate(joystick.getTwist()) * 6);
+    pid.setSetpoint(attenuate(joystick.getTwist()) * 4);
+    
+    drive.arcadeDrive(joystick.getY(), -attenuate(output), false);
+
+    /*if(ahrs.getRate() >= 6){
+      //pid.reset();
+    }
+    else if(ahrs.getRate() <= -6){
+      pid.reset();
+    }*/
+    SmartDashboard.putNumber("Output", output);
+    SmartDashboard.putNumber("Setpoint", pid.getSetpoint());
+    SmartDashboard.putNumber("Error", pid.getError());
+    SmartDashboard.putBoolean("On Target?", pid.onTarget());
   }
 
   @Override
@@ -56,10 +73,12 @@ public class PIDDriveAHRS extends Command {
 
   @Override
   protected void end() {
+    pid.reset();
   }
 
   @Override
   protected void interrupted() {
+    end();
   }
 
   private double attenuate(double value) {
