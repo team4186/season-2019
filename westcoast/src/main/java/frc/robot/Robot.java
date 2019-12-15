@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
 
   //Sensors
   private final Encoder leftEncoder = new Encoder(0, 1);
-  private final Encoder rightEncoder = new Encoder(3,2);
+  private final Encoder rightEncoder = new Encoder(3, 2);
 
   //Pneumatics
   private Compressor compressor = new Compressor(10);
@@ -44,7 +44,8 @@ public class Robot extends TimedRobot {
 
   //Commands
   //PIDDrive teleopDrive = new PIDDrive(drive, joystick, leftEncoder, rightEncoder);
-  TeleopDrive teleopDrive = new TeleopDrive(drive,joystick);
+  //TeleopDrive teleopDrive = new TeleopDrive(drive,joystick);
+  EncoderTest teleopDrive = new EncoderTest(drive, joystick, leftEncoder, rightEncoder);
   
   @Override
   public void robotInit() {
@@ -78,7 +79,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     teleopDrive.cancel();
 
-    compressor.setClosedLoopControl(true);
+    compressor.setClosedLoopControl(false);
 
     fireButton.whenPressed(new ActuateTwoDoubleSolenoids(flipperSolenoid, pusherSolenoid, Value.kForward, Value.kReverse, Value.kReverse, Value.kForward));
 

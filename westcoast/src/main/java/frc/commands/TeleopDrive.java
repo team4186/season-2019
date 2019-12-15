@@ -24,10 +24,32 @@ public class TeleopDrive extends Command {
 	
 	@Override
 	protected void execute() {	
-			drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getTwist()));
-			//drive.arcadeDrive( attenuate(-joystick.getY()),attenuate(-joystick.getX()));
-			//drive.arcadeDrive( attenuate(-joystick.getZ()),attenuate(-joystick.getX()));
-		
+		double leftSetpoint;
+		double rightSetpoint;
+		double xSpeed = joystick.getY();
+		double zRotation = -joystick.getTwist();
+		double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
+		if (xSpeed >= 0.0) {
+		  // joystick is pushed forward
+		  if (zRotation >= 0.0) {
+			leftSetpoint = maxInput;
+			rightSetpoint = xSpeed - zRotation;
+		  } else {
+			leftSetpoint = xSpeed + zRotation;
+			rightSetpoint = maxInput;
+		  }
+		} else {
+		  // joystick is pulled back
+		  if (zRotation >= 0.0) {
+			leftSetpoint = xSpeed + zRotation;
+			rightSetpoint = maxInput;
+		  } else {
+			leftSetpoint = maxInput;
+			rightSetpoint = xSpeed - zRotation;
+		  }
+		}
+			
+		drive.tankDrive(leftSetpoint, rightSetpoint, false);
 	}
 	
 	@Override
